@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌸 Japan Trip 2026 · 9–16 May</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;600&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+:root{
+  --cream:#fff8f3;--cream2:#fdeee2;--paper:#fff5ee;
+  --sakura-50:#fde7ee;--sakura-100:#fbd0dd;--sakura-200:#f5a8c0;
+  --sakura-300:#ec85a3;--sakura-500:#d65c80;--sakura-700:#a83d5e;
+  --mint-50:#e8f5ee;--mint-200:#aed9c1;--mint-500:#5fa881;
+  --lavender-50:#f0ebf7;--lavender-200:#cab8e0;--lavender-500:#8169ad;
+  --honey-50:#fdf3df;--honey-200:#f0d68c;--honey-500:#c89738;
+  --sky-50:#e6f1f7;--sky-200:#a8c8de;--sky-500:#4a82a8;
+  --ink:#3a2a2e;--ink-soft:#6e5a60;--ink-mute:#a08a90;
+  --line:rgba(216,138,166,0.18);--line-strong:rgba(168,61,94,0.28);
+  --gold:#b88a3e;--r:12px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{font-family:'Sarabun','Noto Serif JP',sans-serif;color:var(--ink);background:var(--cream);overflow-x:hidden;line-height:1.65;-webkit-font-smoothing:antialiased;}
+
+/* ── SAKURA CANVAS ── */
+#sk{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:999;opacity:.5;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;height:52px;
+  background:rgba(255,248,243,.96);backdrop-filter:blur(16px);
+  border-bottom:1px solid var(--line);
+  display:flex;align-items:center;padding:0 1rem;gap:.75rem;
+  box-shadow:0 1px 12px rgba(168,61,94,.08);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:.95rem;color:var(--sakura-700);white-space:nowrap;font-weight:700;}
+.nav-scroll{display:flex;gap:.3rem;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1;}
+.nav-scroll::-webkit-scrollbar{display:none;}
+.nav-scroll a{flex-shrink:0;padding:.35rem .7rem;color:var(--ink-mute);text-decoration:none;font-size:.72rem;border-radius:20px;border:1px solid transparent;transition:all .2s;white-space:nowrap;font-weight:600;}
+.nav-scroll a:hover,.nav-scroll a.active{color:var(--sakura-700);border-color:var(--sakura-200);background:var(--sakura-50);}
+
+/* ── HERO ── */
+.hero{position:relative;z-index:1;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:72px 1.25rem 3rem;background:linear-gradient(160deg,var(--cream) 0%,var(--sakura-50) 50%,var(--lavender-50) 100%);}
+.hero-jp{font-family:'Shippori Mincho',serif;font-size:.85rem;color:var(--sakura-700);letter-spacing:.3em;margin-bottom:.75rem;opacity:.75;}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,12vw,6rem);font-weight:700;line-height:.9;background:linear-gradient(135deg,var(--sakura-500),var(--lavender-500),var(--sakura-700));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.5rem;}
+.hero-sub{font-size:.9rem;color:var(--ink-soft);margin-bottom:1.75rem;font-weight:600;}
+.badges{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:2rem;}
+.badge{background:#fff;border:1px solid var(--sakura-200);padding:.3rem .8rem;border-radius:20px;font-size:.75rem;color:var(--ink);font-weight:600;box-shadow:0 2px 8px rgba(216,92,128,.08);}
+.day-pills{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;}
+.day-pill{background:var(--sakura-50);border:1px solid var(--sakura-200);padding:.45rem 1rem;border-radius:24px;font-size:.75rem;cursor:pointer;transition:all .2s;color:var(--sakura-700);text-decoration:none;display:inline-block;font-weight:600;}
+.day-pill:hover{background:var(--sakura-100);}
+
+/* ── WRAP ── */
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:3rem 1rem 2rem;}
+@media(min-width:640px){.wrap{padding:3rem 1.5rem 2rem;}}
+
+/* ── SECTION HEADER ── */
+.sec-hd{display:flex;align-items:flex-start;gap:.75rem;margin-bottom:2rem;padding-bottom:1rem;border-bottom:1.5px dashed var(--line-strong);}
+.sec-num{font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:rgba(214,92,128,.1);font-weight:700;line-height:1;flex-shrink:0;}
+.sec-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--sakura-700);font-weight:700;}
+.sec-sub{font-size:.78rem;color:var(--ink-mute);margin-top:.2rem;}
+
+/* ── DAY BLOCK ── */
+.day-block{margin-bottom:1.5rem;scroll-margin-top:60px;}
+.day-hd{display:flex;align-items:center;gap:.75rem;padding:.9rem 1rem;
+  background:linear-gradient(135deg,var(--sakura-50),var(--lavender-50));
+  border:1px solid var(--sakura-200);border-radius:var(--r) var(--r) 0 0;
+  cursor:pointer;user-select:none;}
+.day-hd.c-mint{background:linear-gradient(135deg,var(--mint-50),var(--sky-50));border-color:var(--mint-200);}
+.day-hd.c-honey{background:linear-gradient(135deg,var(--honey-50),var(--cream2));border-color:var(--honey-200);}
+.day-hd.c-sky{background:linear-gradient(135deg,var(--sky-50),var(--mint-50));border-color:var(--sky-200);}
+.day-hd.c-lav{background:linear-gradient(135deg,var(--lavender-50),var(--sakura-50));border-color:var(--lavender-200);}
+.day-num{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--sakura-500);font-weight:700;min-width:2rem;line-height:1;}
+.day-hd.c-mint .day-num{color:var(--mint-500);}
+.day-hd.c-honey .day-num{color:var(--honey-500);}
+.day-hd.c-sky .day-num{color:var(--sky-500);}
+.day-hd.c-lav .day-num{color:var(--lavender-500);}
+.day-info{flex:1;}
+.day-title{font-size:.92rem;color:var(--ink);font-weight:700;}
+.day-sub{font-size:.74rem;color:var(--ink-mute);margin-top:.1rem;}
+.tog{margin-left:auto;color:var(--ink-mute);font-size:1.1rem;transition:transform .25s;flex-shrink:0;}
+.tog.open{transform:rotate(180deg);}
+.day-body{border:1px solid var(--line);border-top:none;border-radius:0 0 var(--r) var(--r);background:#fff;}
+.day-body.hide{display:none;}
+
+/* ── EVENT ── */
+.ev{padding:.85rem 1rem;border-bottom:1px solid rgba(216,138,166,.1);display:grid;grid-template-columns:auto auto 1fr;gap:.5rem .7rem;}
+.ev:last-child{border-bottom:none;}
+.ev:hover{background:var(--cream);}
+.ev-time{font-family:'Cormorant Garamond',serif;font-size:.72rem;color:var(--gold);letter-spacing:.03em;white-space:nowrap;padding-top:.1rem;min-width:88px;font-weight:600;}
+.ev-icon{font-size:.95rem;padding-top:.05rem;}
+.ev-name{font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:.25rem;}
+.ev-detail{font-size:.78rem;color:var(--ink-soft);line-height:1.7;font-weight:500;}
+.ev-detail strong{color:var(--ink);font-weight:700;}
+
+/* ── CHIPS ── */
+.chips{display:flex;flex-wrap:wrap;gap:.3rem;margin:.3rem 0;}
+.chip{display:inline-flex;align-items:center;gap:3px;font-size:.66rem;font-weight:700;padding:.12rem .45rem;border-radius:4px;letter-spacing:.02em;}
+.cp{background:var(--honey-50);color:var(--honey-500);border:1px solid rgba(200,151,56,.25);}
+.ct{background:var(--mint-50);color:var(--mint-500);border:1px solid rgba(95,168,129,.3);}
+.cw{background:var(--sky-50);color:var(--sky-500);border:1px solid rgba(74,130,168,.3);}
+.cs{background:var(--sakura-50);color:var(--sakura-500);border:1px solid var(--sakura-100);}
+.ca{background:var(--lavender-50);color:var(--lavender-500);border:1px solid var(--lavender-200);}
+
+/* ── GMAP LINK ── */
+.gmap{display:inline-flex;align-items:center;gap:.25rem;color:var(--mint-500);text-decoration:none;font-size:.72rem;padding:.12rem .5rem;border:1px solid var(--mint-200);border-radius:5px;margin-top:.3rem;transition:all .2s;font-weight:600;background:var(--mint-50);}
+.gmap:hover{background:var(--mint-200);}
+.gmaps{display:flex;flex-wrap:wrap;gap:.3rem;margin-top:.3rem;}
+
+/* ── FOOD SECTION ── */
+.meal-day{margin-bottom:2.5rem;}
+.meal-day-title{font-family:'Cormorant Garamond',serif;color:var(--sakura-500);font-size:1rem;font-weight:700;margin-bottom:1rem;padding-left:.6rem;border-left:3px solid var(--sakura-300);}
+.meal-block{background:#fff;border:1px solid var(--line);border-radius:var(--r);margin-bottom:.75rem;overflow:hidden;box-shadow:0 2px 10px rgba(168,61,94,.05);}
+.meal-hd{display:flex;align-items:center;gap:.6rem;padding:.6rem 1rem;background:linear-gradient(90deg,var(--sakura-50),#fff);border-bottom:1px solid var(--line);}
+.meal-time{font-family:'Cormorant Garamond',serif;color:var(--gold);font-size:.72rem;flex-shrink:0;font-weight:700;}
+.meal-name{font-size:.85rem;font-weight:700;color:var(--sakura-700);}
+.meal-body{padding:.85rem 1rem;}
+
+.r-card{background:var(--cream);border:1px solid var(--sakura-100);border-left:3px solid var(--sakura-500);border-radius:8px;padding:.85rem;margin-bottom:.5rem;position:relative;}
+.r-card.chosen::after{content:'✓ เลือก';position:absolute;top:.5rem;right:.7rem;font-size:.62rem;color:var(--sakura-700);background:var(--sakura-50);padding:.1rem .4rem;border-radius:3px;font-weight:700;}
+.r-card.opt{border-left-color:var(--honey-500);border-color:var(--honey-100,#fdf3df);background:var(--honey-50);opacity:.9;}
+.r-card.wish{border-left-color:var(--lavender-500);border-color:var(--lavender-50);background:var(--lavender-50);opacity:.9;}
+.r-name{font-size:.88rem;font-weight:700;color:var(--ink);margin-bottom:.35rem;}
+.r-jp{font-size:.74rem;color:var(--ink-mute);margin-left:.3rem;}
+.r-detail{font-size:.76rem;color:var(--ink-soft);line-height:1.7;font-weight:500;}
+.r-detail strong{color:var(--ink);}
+.sec-label{font-size:.67rem;color:var(--honey-500);letter-spacing:.04em;text-transform:uppercase;margin:.65rem 0 .35rem;padding-left:.5rem;border-left:2px solid var(--honey-200);font-weight:700;}
+.wish-label{font-size:.67rem;color:var(--lavender-500);letter-spacing:.04em;text-transform:uppercase;margin:.65rem 0 .35rem;padding-left:.5rem;border-left:2px solid var(--lavender-200);font-weight:700;}
+
+/* ── MAP SECTION ── */
+.map-day{margin-bottom:2rem;border-radius:var(--r);overflow:hidden;box-shadow:0 4px 20px rgba(168,61,94,.08);border:1px solid var(--line);}
+.map-hd{padding:.75rem 1rem;background:linear-gradient(90deg,var(--sakura-50),#fff);border-bottom:1px solid var(--line);display:flex;align-items:center;gap:.5rem;}
+.map-hd .mday{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--sakura-700);font-weight:700;}
+.map-hd .mname{font-size:.82rem;color:var(--ink-soft);}
+.leaflet-map{height:260px;}
+@media(min-width:640px){.leaflet-map{height:320px;}}
+
+/* ── TIPS ── */
+.tips-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem;}
+@media(max-width:480px){.tips-grid{grid-template-columns:1fr;}}
+.tip-card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:1rem;box-shadow:0 2px 10px rgba(168,61,94,.05);}
+.tip-card h3{display:flex;align-items:center;gap:.4rem;font-size:.88rem;color:var(--sakura-700);margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px dashed var(--line-strong);}
+.tip-item{display:flex;gap:.4rem;margin-bottom:.4rem;font-size:.78rem;line-height:1.65;}
+.tb{color:var(--sakura-500);flex-shrink:0;}
+.tt2{color:var(--ink-soft);}
+.tt2 strong{color:var(--ink);}
+
+/* ── CHECKLIST ── */
+.check-item{display:flex;gap:.5rem;align-items:flex-start;margin-bottom:.4rem;font-size:.78rem;cursor:pointer;line-height:1.65;}
+.check-item input[type=checkbox]{width:15px;height:15px;flex-shrink:0;margin-top:.2rem;accent-color:var(--sakura-500);}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:1;text-align:center;padding:2.5rem 1rem;border-top:1px solid var(--line);color:var(--ink-mute);font-size:.75rem;background:var(--cream2);}
+
+/* ── SECTION BG ALT ── */
+.sec-alt{background:linear-gradient(180deg,var(--cream) 0%,var(--sakura-50) 100%);}
+.sec-alt2{background:linear-gradient(180deg,var(--lavender-50) 0%,var(--cream) 100%);}
+
+/* ── ATTR GRID ── */
+.attr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:.7rem;}
+@media(max-width:480px){.attr-grid{grid-template-columns:1fr;}}
+.attr-card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:.9rem;transition:border-color .2s;}
+.attr-card:hover{border-color:var(--sakura-300);}
+.attr-card.wish{border-color:var(--lavender-200);background:var(--lavender-50);}
+.attr-day{font-size:.67rem;color:var(--gold);margin-bottom:.3rem;font-weight:700;letter-spacing:.03em;}
+.attr-day.w{color:var(--lavender-500);}
+.attr-name{font-size:.9rem;font-weight:700;color:var(--ink);margin-bottom:.3rem;}
+.attr-detail{font-size:.76rem;color:var(--ink-soft);line-height:1.65;}
+
+/* ── ROUTE BLOCK ── */
+.route-block{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:1.1rem;margin-bottom:1.1rem;box-shadow:0 2px 10px rgba(168,61,94,.05);}
+.route-title{color:var(--sakura-700);font-size:.9rem;font-weight:700;margin-bottom:.9rem;font-family:'Cormorant Garamond',serif;font-size:1rem;}
+.stop{display:flex;gap:.7rem;align-items:flex-start;}
+.stop-line{display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:3px;}
+.stop-dot{width:9px;height:9px;border-radius:50%;background:var(--gold);border:2px solid #fff;flex-shrink:0;}
+.stop-conn{width:2px;background:rgba(184,138,62,.2);flex:1;min-height:24px;}
+.stop-info{padding-bottom:1rem;flex:1;}
+.stop-name{font-size:.85rem;font-weight:700;color:var(--ink);}
+.stop-detail{font-size:.74rem;color:var(--ink-mute);margin-top:.1rem;line-height:1.6;}
+
+/* photo strip */
+.photo-strip{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:.75rem 0;}
+.ph{border-radius:8px;overflow:hidden;aspect-ratio:4/3;}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;}
+</style>
+</head>
+<body>
+<canvas id="sk"></canvas>
+
+<nav>
+  <div class="nav-logo">🌸 JP26</div>
+  <div class="nav-scroll">
+    <a href="#s1">① Timeline</a>
+    <a href="#s2">② Food</a>
+    <a href="#s3">③ Maps</a>
+    <a href="#s4">④ สถานที่</a>
+    <a href="#s5">⑤ Tips</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-jp">二〇二六年 五月 ・ 桜の旅</div>
+  <h1>JAPAN<br>2026</h1>
+  <p class="hero-sub">9–16 พฤษภาคม · 2 คน · BKK → TYO · 8 วัน 7 คืน</p>
+  <div class="badges">
+    <span class="badge">✈️ JL708 / JL707</span>
+    <span class="badge">🏨 Shinjuku Grandbell</span>
+    <span class="badge">🚗 Nissan Day 4–5</span>
+    <span class="badge">🏰 DisneySea Day 6</span>
+    <span class="badge">Tokyo · Kamakura · Fuji</span>
+  </div>
+  <div class="day-pills">
+    <a class="day-pill" href="#d9">Day 1 · Arrival</a>
+    <a class="day-pill" href="#d10">Day 2 · Kamakura</a>
+    <a class="day-pill" href="#d11">Day 3 · Ikebukuro</a>
+    <a class="day-pill" href="#d12">Day 4 · Fuji①</a>
+    <a class="day-pill" href="#d13">Day 5 · Fuji②</a>
+    <a class="day-pill" href="#d14">Day 6 · Disney</a>
+    <a class="day-pill" href="#d15">Day 7 · Ginza</a>
+    <a class="day-pill" href="#d16">Day 8 · Depart</a>
+  </div>
+</section>
+
+<!-- ═══════ SECTION 1: TIMELINE ═══════ -->
+<section id="s1" style="background:var(--cream);">
+<div class="wrap">
+  <div class="sec-hd">
+    <div class="sec-num">01</div>
+    <div><div class="sec-title">TIMELINE</div><div class="sec-sub">ตารางเวลาทุกวัน · คลิกชื่อวันเพื่อเปิด/ปิด · 📍 = Google Maps</div></div>
+  </div>
+
+  <!-- DAY 1 -->
+  <div class="day-block" id="d9">
+    <div class="day-hd" onclick="tog(this)">
+      <div class="day-num">1</div>
+      <div class="day-info"><div class="day-title">เสาร์ 9 พ.ค. · Arrival Day · Tokyo</div><div class="day-sub">BKK→Narita · N'EX · ซื้อ On Cloud · Ichiran · Omoide Yokocho</div></div>
+      <div class="tog open">▾</div>
+    </div>
+    <div class="day-body">
+      <div class="photo-strip">
+        <div class="ph"><img src="https://images.unsplash.com/photo-1542931287-023b922fa89b?w=400&h=300&fit=crop" alt="Shinjuku Night" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1554797589-7241bb691973?w=400&h=300&fit=crop" alt="Ichiran Ramen" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1535007813616-79dc02ba4021?w=400&h=300&fit=crop" alt="Omoide Yokocho" loading="lazy"></div>
+      </div>
+      <div class="ev"><div class="ev-time">07:55</div><div class="ev-icon">✈️</div><div><div class="ev-name">ออกเดินทาง BKK → Narita · JL708</div><div class="chips"><span class="chip ct">JL708</span><span class="chip cs">อาหาร JAL รวมตั๋ว</span></div><div class="ev-detail">ถึง NRT 16:05 · เวลาบิน ~6 ชั่วโมง</div></div></div>
+      <div class="ev"><div class="ev-time">16:05–17:00</div><div class="ev-icon">🛬</div><div><div class="ev-name">ถึง Narita T2 · ตม. + ซื้อ N'EX</div><div class="chips"><span class="chip cp">¥4,070/คน Round Trip</span><span class="chip cs">~936฿</span></div><div class="ev-detail"><strong>1. เปิด eSIM:</strong> Data Roaming → Japan eSIM line<br><strong>2. ซื้อ N'EX:</strong> ชั้น 1 → JR East Travel Service Center ป้ายน้ำเงิน → โชว์ Passport</div></div></div>
+      <div class="ev"><div class="ev-time">17:00–18:30</div><div class="ev-icon">🚆</div><div><div class="ev-name">N'EX → Shinjuku Station</div><div class="chips"><span class="chip ct">Narita Express</span></div><div class="ev-detail">ลง B1 → Platform 1/2 → ขบวน "Shinjuku / Ikebukuro" · ~90 นาที · ถึง ~17:50</div></div></div>
+      <div class="ev" id="ev-d9-alpen"><div class="ev-time">18:00–19:00</div><div class="ev-icon">👟</div><div><div class="ev-name">Alpen Tokyo — ซื้อ On Cloud</div><div class="chips"><span class="chip cp">¥15,000–25,000</span><span class="chip cs">เปิดถึง 22:00</span><span class="chip ca">Tax-Free</span></div><div class="ev-detail">JR Shinjuku <strong>East Exit เดิน 1 นาที</strong> · 3-23-7 Shinjuku, Unicore B2–8F · On Cloud 30+ รุ่น · วัดขนาดฟรี Sidas FEET BOX<br><strong>⚠️ Tax-Free 2026:</strong> จ่ายเต็มก่อน รับคืน 10% ที่ Narita วันกลับ (≥¥5,500 + Passport)</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Alpen+Tokyo+Shinjuku+3-23-7" target="_blank">📍 Alpen Tokyo</a></div></div></div>
+      <div class="ev" id="ev-d9-hotel"><div class="ev-time">19:00–19:30</div><div class="ev-icon">🏨</div><div><div class="ev-name">Check-in Shinjuku Grandbell Hotel</div><div class="ev-detail">2-14-5 Kabukicho · วางกระเป๋า เตรียมออกกินเย็น</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Shinjuku+Grandbell+Hotel+2-14-5+Kabukicho" target="_blank">📍 Hotel</a></div></div></div>
+      <div class="ev" id="ev-d9-ichiran"><div class="ev-time">19:30–20:15</div><div class="ev-icon">🍜</div><div><div class="ev-name">เย็น ① — Ichiran Ramen</div><div class="chips"><span class="chip cs">Tonkotsu Solo</span><span class="chip cp">¥1,000–1,200</span></div><div class="ev-detail">Tabelog 3.68 · 2,400+ รีวิว · คิว 10–20 นาที · เปิด 24hr · เดินจากโรงแรม <strong>8 นาที East</strong></div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Ichiran+Ramen+Kabukicho+Shinjuku" target="_blank">📍 Ichiran</a><a class="gmap" href="#food-d9-dinner1" onclick="jumpFood(event,'food-d9-dinner1')">🍴 ดูตัวเลือก</a></div></div></div>
+      <div class="ev" id="ev-d9-omoide"><div class="ev-time">20:30–22:00</div><div class="ev-icon">🍢</div><div><div class="ev-name">เย็น ② — Omoide Yokocho 思い出横丁</div><div class="chips"><span class="chip cs">Yakitori Izakaya</span><span class="chip cp">¥2,000–3,000</span></div><div class="ev-detail">ซอยยากิโทริย้อนยุค หลัง West Exit · เดิน 12 นาที · บรรยากาศ Showa · เบียร์+ยากิโทริ</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Omoide+Yokocho+Memory+Lane+Shinjuku" target="_blank">📍 Omoide</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div class="day-block" id="d10">
+    <div class="day-hd c-mint" onclick="tog(this)">
+      <div class="day-num">2</div>
+      <div class="day-info"><div class="day-title">อาทิตย์ 10 พ.ค. · KAMAKURA Day Trip</div><div class="day-sub">Enoden · ไดบุตสึ · Hasedera · Slam Dunk · Shichirigahama · AKATSUKI</div></div>
+      <div class="tog open">▾</div>
+    </div>
+    <div class="day-body">
+      <div class="photo-strip">
+        <div class="ph"><img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&h=300&fit=crop" alt="Great Buddha" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1601823984263-5fce2deefb03?w=400&h=300&fit=crop" alt="Kamakura" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1609252509634-9f0bb28c3ba7?w=400&h=300&fit=crop" alt="Enoden" loading="lazy"></div>
+      </div>
+      <div class="ev"><div class="ev-time">08:30–09:30</div><div class="ev-icon">🍙</div><div><div class="ev-name">เช้า — Panda Onigiri ぱん田</div><div class="chips"><span class="chip cp">¥800–1,200</span></div><div class="ev-detail">Shinjuku East Exit 3–5 นาที · เปิด 09:00 · กินก่อนขึ้นรถไฟ</div></div></div>
+      <div class="ev"><div class="ev-time">09:50–10:50</div><div class="ev-icon">🚆</div><div><div class="ev-name">JR Shinjuku → Kamakura</div><div class="chips"><span class="chip ct">JR Shonan-Shinjuku</span><span class="chip cp">¥1,040 · Suica</span></div><div class="ev-detail"><strong>Platform 4</strong> · ขบวนมุ่ง <strong>Zushi / Yokosuka เท่านั้น!</strong> · ~57 นาที · ไม่เปลี่ยนสาย</div></div></div>
+      <div class="ev"><div class="ev-time">11:00–11:30</div><div class="ev-icon">🎫</div><div><div class="ev-name">ซื้อ Enoden Day Pass + เดิน Komachi-dori</div><div class="chips"><span class="chip cp">¥650/คน</span><span class="chip ct">ขึ้นลงไม่จำกัดทั้งวัน</span></div><div class="ev-detail">ซื้อที่สถานี Kamakura · ร้านขนมโบราณ Curry Pan + Matcha Soft</div></div></div>
+      <div class="ev" id="ev-d10-lunch"><div class="ev-time">11:30–13:15</div><div class="ev-icon">🍱</div><div><div class="ev-name">กลางวัน — Gohachitenpu Goshichi 五八天麩羅</div><div class="chips"><span class="chip cs">ชิราสึ+เทมปุระ</span><span class="chip cp">¥1,500–2,000</span></div><div class="ev-detail">Tabelog 3.55 · 300+ รีวิว · คิว 15–30 นาที · Komachi-dori 5 นาที · เปิด 11:00–18:00</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=五八天麩羅五七+鎌倉" target="_blank">📍 Gohachitenpu</a><a class="gmap" href="#food-d10-lunch" onclick="jumpFood(event,'food-d10-lunch')">🍴 ดูตัวเลือก</a></div></div></div>
+      <div class="ev"><div class="ev-time">13:20</div><div class="ev-icon">🚃</div><div><div class="ev-name">Enoden: Kamakura → Hase (3 stops · 9 นาที)</div><div class="chips"><span class="chip ct">Day Pass ✓</span></div></div></div>
+      <div class="ev" id="ev-d10-buddha"><div class="ev-time">13:30–14:20</div><div class="ev-icon">⛩️</div><div><div class="ev-name">Kotoku-in 高徳院 — ไดบุตสึ</div><div class="chips"><span class="chip ca">มรดกโลก</span><span class="chip cp">¥300/คน</span></div><div class="ev-detail">Hase Station เดิน 10 นาที · เปิด 08:00–17:30 · พระสัมฤทธิ์กลางแจ้ง สูง 13.35 ม.</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Kotoku-in+Great+Buddha+Kamakura" target="_blank">📍 Kotoku-in</a></div></div></div>
+      <div class="ev" id="ev-d10-hase"><div class="ev-time">14:30–15:20</div><div class="ev-icon">🌸</div><div><div class="ev-name">Hasedera 長谷寺 — วัดดอกไม้ วิวทะเล</div><div class="chips"><span class="chip ca">วัดดอกไม้</span><span class="chip cp">¥400/คน</span></div><div class="ev-detail">Hase Station 5 นาที · เปิด 08:00–17:00 · ถ้ำเจ้าแม่กวนอิม · พ.ค. ไฮเดรนเยีย+กุหลาบบาน</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Hasedera+Temple+Kamakura" target="_blank">📍 Hasedera</a></div></div></div>
+      <div class="ev"><div class="ev-time">15:30</div><div class="ev-icon">🚃</div><div><div class="ev-name">Enoden: Hase → Kamakura-kokomae (4 stops)</div><div class="chips"><span class="chip ct">Day Pass ✓ · ออกประตูหน้า</span></div><div class="ev-detail">นั่งฝั่งขวามือ วิวทะเลทั้งทาง</div></div></div>
+      <div class="ev" id="ev-d10-slamdunk"><div class="ev-time">15:40–16:20</div><div class="ev-icon">📸</div><div><div class="ev-name">Slam Dunk Crossing + Rakko Park</div><div class="chips"><span class="chip ca">Anime Landmark</span><span class="chip cs">ฟรี</span></div><div class="ev-detail">ออกประตูหน้าสถานี → Crossing ทันที · Rakko Park เดิน 2 นาที</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=鎌倉高校前踏切+Slam+Dunk+Crossing" target="_blank">📍 Slam Dunk</a></div></div></div>
+      <div class="ev"><div class="ev-time">16:25</div><div class="ev-icon">🚃</div><div><div class="ev-name">Enoden: Kamakura-kokomae → Shichirigahama (1 stop)</div></div></div>
+      <div class="ev" id="ev-d10-beach"><div class="ev-time">16:30–17:15</div><div class="ev-icon">🌊</div><div><div class="ev-name">Shichirigahama Beach 七里ヶ浜</div><div class="chips"><span class="chip ca">ชายหาด 7 ลี้</span><span class="chip cs">ฟรี</span></div><div class="ev-detail">วิวฟูจิถ้าฟ้าใส · bills restaurant อยู่ติด · Golden Hour</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Shichirigahama+Beach+Kamakura" target="_blank">📍 Shichirigahama</a></div></div></div>
+      <div class="ev"><div class="ev-time">17:20</div><div class="ev-icon">🚃</div><div><div class="ev-name">Enoden: กลับ Hase (1 stop)</div></div></div>
+      <div class="ev" id="ev-d10-akatsuki"><div class="ev-time">18:00–20:15</div><div class="ev-icon">🐟</div><div><div class="ev-name">เย็น — AKATSUKI 赤月</div><div class="chips"><span class="chip cs">Aged Bluefin Tuna Bowl</span><span class="chip cp">¥3,000–5,000</span></div><div class="ev-detail">Tabelog 3.5+ · <strong>จองออนไลน์ล่วงหน้า!</strong> Hase Station เดิน 3 นาที · ทูน่าหมัก Aged + Negitoro + ข้าวสาหร่ายพิมพ์ไดบุตสึ</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=AKATSUKI+Hase+Kamakura+赤月" target="_blank">📍 AKATSUKI</a><a class="gmap" href="#food-d10-dinner" onclick="jumpFood(event,'food-d10-dinner')">🍴 ดูตัวเลือก</a></div></div></div>
+      <div class="ev"><div class="ev-time">20:30</div><div class="ev-icon">🚆</div><div><div class="ev-name">JR กลับ Shinjuku · ~57 นาที</div><div class="chips"><span class="chip ct">Shonan-Shinjuku มุ่ง Shinjuku</span><span class="chip cp">¥1,040</span></div><div class="ev-detail">รถสุดท้ายจาก Kamakura ~23:00</div></div></div>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div class="day-block" id="d11">
+    <div class="day-hd c-honey" onclick="tog(this)">
+      <div class="day-num">3</div>
+      <div class="day-info"><div class="day-title">จันทร์ 11 พ.ค. · IKEBUKURO Shopping</div><div class="day-sub">Tobu Uniqlo · ABC-Mart · Sushimamire · Akihabara (option) · Gyukaku</div></div>
+      <div class="tog open">▾</div>
+    </div>
+    <div class="day-body">
+      <div class="photo-strip">
+        <div class="ph"><img src="https://images.unsplash.com/photo-1554189097-ffe88e998a2b?w=400&h=300&fit=crop" alt="Ikebukuro" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1611143669185-af224c5e3252?w=400&h=300&fit=crop" alt="Sushi" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1591814468924-caf88d1232e1?w=400&h=300&fit=crop" alt="Yakiniku" loading="lazy"></div>
+      </div>
+      <div class="ev" id="ev-d11-breakfast"><div class="ev-time">09:00–09:45</div><div class="ev-icon">☕</div><div><div class="ev-name">เช้า — Doutor Coffee</div><div class="chips"><span class="chip cp">¥600–900</span></div><div class="ev-detail">แถว Kabukicho ใกล้โรงแรม · กาแฟ+แซนด์วิช Morning set</div><div class="gmaps"><a class="gmap" href="#food-d11-breakfast" onclick="jumpFood(event,'food-d11-breakfast')">🍴 ดูตัวเลือก</a></div></div></div>
+      <div class="ev"><div class="ev-time">10:00</div><div class="ev-icon">🚆</div><div><div class="ev-name">Shinjuku → Ikebukuro · JR Yamanote</div><div class="chips"><span class="chip ct">วงแหวนสีเขียว</span><span class="chip cp">¥160 · Suica</span></div><div class="ev-detail"><strong>Platform 14–15</strong> มุ่ง Ikebukuro · 2 stops · 5 นาที</div></div></div>
+      <div class="ev" id="ev-d11-tobu"><div class="ev-time">10:15–11:30</div><div class="ev-icon">🛍️</div><div><div class="ev-name">Tobu Ikebukuro · Uniqlo 9–10F</div><div class="chips"><span class="chip ca">Tax-Free 10F</span><span class="chip cs">คูปอง 5% ที่ 2F</span></div><div class="ev-detail">เปิด 10:00–20:00 · คูปอง 5% รับที่ 2F Tourist Info (โชว์ Passport) · Tax-Free ≥¥5,500</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Tobu+Department+Store+Ikebukuro+Tokyo" target="_blank">📍 Tobu Ikebukuro</a></div></div></div>
+      <div class="ev"><div class="ev-time">11:30–12:00</div><div class="ev-icon">👟</div><div><div class="ev-name">ABC-MART · Sunshine 60 Street</div><div class="chips"><span class="chip cp">¥8,000–18,000</span></div><div class="ev-detail">East Exit เดิน 7 นาที · Nike / Adidas / New Balance รุ่น Japan only</div></div></div>
+      <div class="ev" id="ev-d11-lunch"><div class="ev-time">12:00–13:00</div><div class="ev-icon">🍣</div><div><div class="ev-name">กลางวัน — Sushimamire すしまみれ</div><div class="chips"><span class="chip cs">ซูชิยืนกิน</span><span class="chip cp">¥1,000–1,500</span></div><div class="ev-detail">Ikebukuro West Exit 2 นาที · Tabelog 3.5+ · คิว 10–30 นาที · เปิด 24hr · Maguro set ¥980</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=すしまみれ+池袋西口" target="_blank">📍 Sushimamire</a><a class="gmap" href="#food-d11-lunch" onclick="jumpFood(event,'food-d11-lunch')">🍴 ดูตัวเลือก</a></div></div></div>
+      <div class="ev"><div class="ev-time">13:00–14:30</div><div class="ev-icon">💄</div><div><div class="ev-name">Matsumoto Kiyoshi マツキヨ</div><div class="ev-detail">East Exit 5 นาที · เครื่องสำอาง Hada Labo + ยา + ของฝาก · Tax-Free</div></div></div>
+      <div class="ev" id="ev-d11-akiba"><div class="ev-time">15:00–17:30</div><div class="ev-icon">🔌</div><div><div class="ev-name">บ่าย (Optional) — Akihabara 秋葉原</div><div class="chips"><span class="chip cp">¥210/คน</span><span class="chip cs">Optional</span></div><div class="ev-detail">JR Yamanote → Chuo-Sobu เปลี่ยนที่ Shinjuku · ~25 นาที · Yodobashi Camera · ฟิกเกอร์ · Maid Café</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Akihabara+Electric+Town+Tokyo" target="_blank">📍 Akihabara</a></div></div></div>
+      <div class="ev" id="ev-d11-dinner"><div class="ev-time">19:00–21:00</div><div class="ev-icon">🥩</div><div><div class="ev-name">เย็น — Gyukaku Shinjuku 牛角 · Yakiniku</div><div class="chips"><span class="chip cs">เนื้อย่าง</span><span class="chip cp">¥2,000–3,500</span></div><div class="ev-detail">Tabelog 3.45 · 3,000+ รีวิว · คิว 0–15 นาที · ใกล้โรงแรม 5–10 นาที</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=牛角+新宿歌舞伎町" target="_blank">📍 Gyukaku</a><a class="gmap" href="#food-d11-dinner" onclick="jumpFood(event,'food-d11-dinner')">🍴 ดูตัวเลือก</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- DAY 4 -->
+  <div class="day-block" id="d12">
+    <div class="day-hd c-sky" onclick="tog(this)">
+      <div class="day-num">4</div>
+      <div class="day-info"><div class="day-title">อังคาร 12 พ.ค. · MT. FUJI Day 1</div><div class="day-sub">รับรถ Nissan → Kawaguchiko → Oishi → Oshino → Yamanakako → KONAMI</div></div>
+      <div class="tog open">▾</div>
+    </div>
+    <div class="day-body">
+      <div class="photo-strip">
+        <div class="ph"><img src="https://images.unsplash.com/photo-1490806843957-31f4c9a91c65?w=400&h=300&fit=crop" alt="Mt Fuji" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1565431052286-e9f39f75b800?w=400&h=300&fit=crop" alt="Kawaguchiko" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=400&h=300&fit=crop" alt="Oishi Park" loading="lazy"></div>
+      </div>
+      <div class="ev"><div class="ev-time">07:30</div><div class="ev-icon">🏪</div><div><div class="ev-name">เช้า — 7-Eleven Konbini</div><div class="chips"><span class="chip cp">¥500–700</span></div><div class="ev-detail">ข้าวปั้น + กาแฟ + ขนม กินก่อน Check-out</div></div></div>
+      <div class="ev"><div class="ev-time">09:00</div><div class="ev-icon">🏨</div><div><div class="ev-name">Check-out + ไปรับรถ</div><div class="ev-detail"><strong>แท็กซี่ (แนะนำ ถ้ามีกระเป๋า):</strong> ¥800–1,000 บอก "Nissan Rent a Car Shinjuku West Exit"<br><strong>หรือเดิน 15–18 นาที:</strong> East → ใต้สถานี → West Exit B18/B20 → Odakyu-Ace South</div></div></div>
+      <div class="ev" id="ev-d12-car"><div class="ev-time">09:30–10:00</div><div class="ev-icon">🚗</div><div><div class="ev-name">รับรถ Nissan Rent a Car</div><div class="ev-detail">Odakyu-Ace South Bldg, West Exit Underground<br>เตรียม: Passport + ใบขับขี่สากล + บัตรเครดิต · รับ ETC Card พร้อมรถ</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Nissan+Rent+a+Car+Shinjuku+Station+West" target="_blank">📍 Nissan Shinjuku</a></div></div></div>
+      <div class="ev"><div class="ev-time">10:00–12:00</div><div class="ev-icon">🛣️</div><div><div class="ev-name">ขับ Shinjuku → Kawaguchiko</div><div class="chips"><span class="chip ct">Chuo Expressway</span><span class="chip cp">ETC ~¥2,200</span></div><div class="ev-detail">~90 กม. · ~90–100 นาที · ออก Kawaguchiko IC</div></div></div>
+      <div class="ev" id="ev-d12-lunch"><div class="ev-time">12:10–13:15</div><div class="ev-icon">🍲</div><div><div class="ev-name">กลางวัน — Hoto Fudo ほうとう不動</div><div class="chips"><span class="chip cs">โฮโต้ Local</span><span class="chip cp">¥1,200–1,600</span></div><div class="ev-detail">Google 4.2 · 3,000+ รีวิว · คิว 15–30 นาที · เส้นโฮโต้แบนหนา ซุปมิโสะน้ำฟักทอง</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Hoto+Fudo+Kawaguchiko+ほうとう不動" target="_blank">📍 Hoto Fudo</a></div></div></div>
+      <div class="ev"><div class="ev-time">13:20–14:15</div><div class="ev-icon">🥧</div><div><div class="ev-name">Apple Pie Lab + KAWAGUCHIKO Creamery</div><div class="chips"><span class="chip cp">¥500–700 + ¥500</span></div><div class="ev-detail">Apple Custard Pie ริมทะเลสาบ + Mt.Fuji Soft สีฟ้า Spirulina</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Apple+Pie+Lab+Kawaguchiko" target="_blank">📍 Apple Pie Lab</a><a class="gmap" href="https://maps.google.com/?q=Kawaguchiko+Creamery+河口湖駅" target="_blank">📍 Creamery</a></div></div></div>
+      <div class="ev" id="ev-d12-oishi"><div class="ev-time">14:30–15:30</div><div class="ev-icon">🌸</div><div><div class="ev-name">Oishi Park 大石公園</div><div class="chips"><span class="chip ca">วิวฟูจิ+ดอกไม้</span><span class="chip cs">ฟรี</span></div><div class="ev-detail">ขับ ~10 นาที · วิว Postcard สวยสุดใน Kawaguchiko · โคเซ็นโซ+ลาเวนเดอร์เริ่มบาน พ.ค.</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Oishi+Park+大石公園+Kawaguchiko" target="_blank">📍 Oishi Park</a></div></div></div>
+      <div class="ev" id="ev-d12-oshino"><div class="ev-time">15:55–17:00</div><div class="ev-icon">⛩️</div><div><div class="ev-name">Oshino Hakkai 忍野八海 (UNESCO)</div><div class="chips"><span class="chip ca">มรดกโลก</span><span class="chip cs">ฟรี</span></div><div class="ev-detail">ขับ ~15 นาที · บ่อน้ำ 8 แห่ง น้ำกรองลาวา 80 ปี ดื่มได้ · บ้านหลังคาฟาง</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Oshino+Hakkai+忍野八海" target="_blank">📍 Oshino Hakkai</a></div></div></div>
+      <div class="ev" id="ev-d12-yama"><div class="ev-time">17:25–18:00</div><div class="ev-icon">🦢</div><div><div class="ev-name">Lake Yamanakako 山中湖</div><div class="chips"><span class="chip ca">ทะเลสาบใหญ่สุด Fuji</span><span class="chip cs">ฟรี</span></div><div class="ev-detail">ขับ ~15 นาที · วิวฟูจิฝั่งตะวันออกชัดมาก · นกหงส์ขาว · Golden Hour สวย</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Lake+Yamanakako+山中湖" target="_blank">📍 Yamanakako</a></div></div></div>
+      <div class="ev"><div class="ev-time">18:40</div><div class="ev-icon">🏨</div><div><div class="ev-name">Check-in Fuji Kawaguchiko Resort Hotel</div><div class="ev-detail">ขับกลับ ~30 นาที · พัก+เตรียมกินเย็น</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Fuji+Kawaguchiko+Resort+Hotel" target="_blank">📍 Hotel</a></div></div></div>
+      <div class="ev" id="ev-d12-dinner"><div class="ev-time">19:30–21:00</div><div class="ev-icon">🐠</div><div><div class="ev-name">เย็น — Restaurant KONAMI 湖波</div><div class="chips"><span class="chip cs">วิวฟูจิ</span><span class="chip cp">¥1,500–2,500</span></div><div class="ev-detail"><strong>เมนูภาษาไทย ✅</strong> · เปิด 10:00–21:00 · ที่จอดรถฟรี · ริมทะเลสาบ<br>Hoto + ปลา Wakasagi ทอด + ปลา Yamame ย่างเกลือ</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Restaurant+Konami+Kawaguchiko+湖波" target="_blank">📍 KONAMI</a><a class="gmap" href="#food-d12-dinner" onclick="jumpFood(event,'food-d12-dinner')">🍴 ดูตัวเลือก</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- DAY 5 -->
+  <div class="day-block" id="d13">
+    <div class="day-hd c-sky" onclick="tog(this)">
+      <div class="day-num">5</div>
+      <div class="day-info"><div class="day-title">พุธ 13 พ.ค. · FUJI Day 2 → กลับ Shinjuku</div><div class="day-sub">วิวฟูจิเช้า · 旅の駅 เบเกอรี่ · Yoshida Udon · คืนรถ 19:15 · Menya Kaijin</div></div>
+      <div class="tog open">▾</div>
+    </div>
+    <div class="day-body">
+      <div class="ev"><div class="ev-time">06:30–08:30</div><div class="ev-icon">🗻</div><div><div class="ev-name">ดูวิวฟูจิเช้า + อาบออนเซ็น</div><div class="chips"><span class="chip ca">Golden Hour 06:30–07:30</span></div><div class="ev-detail">ฟูจิยอดสีส้มตอนเช้าสวยที่สุด · อาบออนเซ็นในโรงแรม</div></div></div>
+      <div class="ev" id="ev-d13-breakfast"><div class="ev-time">09:30–10:30</div><div class="ev-icon">☕</div><div><div class="ev-name">เช้า — 旅の駅 kawaguchiko base</div><div class="chips"><span class="chip cp">¥800–1,200</span></div><div class="ev-detail">เปิด 09:30 · ขนมปังมือ ประวัติ 70 ปี · วิวฟูจิจากในร้าน</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=旅の駅+kawaguchiko+base" target="_blank">📍 旅の駅</a><a class="gmap" href="#food-d13-breakfast" onclick="jumpFood(event,'food-d13-breakfast')">🍴 ดูตัวเลือก</a></div></div></div>
+      <div class="ev"><div class="ev-time">10:30–12:00</div><div class="ev-icon">🚶</div><div><div class="ev-name">เดินริมทะเลสาบ + ช้อปของฝาก</div><div class="ev-detail">เก็บภาพ · โยคัง ชาเขียว ขนม · ของฝาก Fuji</div></div></div>
+      <div class="ev" id="ev-d13-lunch"><div class="ev-time">12:00–13:00</div><div class="ev-icon">🍜</div><div><div class="ev-name">กลางวัน — Yoshida Udon 吉田うどん</div><div class="chips"><span class="chip cs">อุด้ง Fuji Style</span><span class="chip cp">¥600–900</span></div><div class="ev-detail">เส้นหนาเหนียว ซุปเข้ม สไตล์ Fujiyoshida · ร้านท้องถิ่น ราคาถูกมาก</div><div class="gmaps"><a class="gmap" href="#food-d13-lunch" onclick="jumpFood(event,'food-d13-lunch')">🍴 ดูตัวเลือก</a></div></div></div>
+      <div class="ev"><div class="ev-time">13:30–17:00</div><div class="ev-icon">🚗</div><div><div class="ev-name">ขับกลับ Kawaguchiko → Shinjuku</div><div class="chips"><span class="chip ct">Chuo Expressway กลับ</span><span class="chip cp">ETC ~¥2,200</span></div><div class="ev-detail">~90 กม. · คาด 2–2.5 ชม. · เติมน้ำมัน Full ก่อนคืนรถ</div></div></div>
+      <div class="ev"><div class="ev-time">19:00–19:15</div><div class="ev-icon">🔑</div><div><div class="ev-name">คืนรถ Nissan — Deadline 19:15 ✅</div><div class="ev-detail">Odakyu-Ace South Bldg, West Exit · ตรวจสภาพรถ + ชำระ ETC · เดินกลับโรงแรม ~15 นาที</div></div></div>
+      <div class="ev"><div class="ev-time">19:30</div><div class="ev-icon">🏨</div><div><div class="ev-name">Check-in กลับ Shinjuku Grandbell</div></div></div>
+      <div class="ev" id="ev-d13-dinner"><div class="ev-time">20:00–21:30</div><div class="ev-icon">🍜</div><div><div class="ev-name">เย็น — Menya Kaijin 麺屋海神</div><div class="chips"><span class="chip cs">ราเม็งซุปปลาอาระ</span><span class="chip cp">¥1,000–1,200</span></div><div class="ev-detail"><strong>Tabelog 3.76 百名店</strong> · 1,500+ รีวิว · คิว ~20 นาที<br>JR Shinjuku East South Exit เดิน 30 วินาที · เปิดถึง 23:30 · ซุปทองใส</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=麺屋海神+新宿" target="_blank">📍 Menya Kaijin</a><a class="gmap" href="#food-d13-dinner" onclick="jumpFood(event,'food-d13-dinner')">🍴 ดูตัวเลือก</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- DAY 6 -->
+  <div class="day-block" id="d14">
+    <div class="day-hd c-lav" onclick="tog(this)">
+      <div class="day-num">6</div>
+      <div class="day-info"><div class="day-title">พฤหัส 14 พ.ค. · DISNEYSEA 🏰</div><div class="day-sub">DisneySea ทั้งวัน · Gyoza Dog · กลับดึก · Nagi Golden Gai</div></div>
+      <div class="tog open">▾</div>
+    </div>
+    <div class="day-body">
+      <div class="photo-strip">
+        <div class="ph"><img src="https://images.unsplash.com/photo-1541087377568-c2a94c7f25f8?w=400&h=300&fit=crop" alt="Disney" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=400&h=300&fit=crop" alt="Ramen" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=400&h=300&fit=crop" alt="Food" loading="lazy"></div>
+      </div>
+      <div class="ev"><div class="ev-time">07:00</div><div class="ev-icon">🏪</div><div><div class="ev-name">เช้า — 7-Eleven Konbini</div><div class="chips"><span class="chip cp">¥300–600</span></div><div class="ev-detail">กินก่อนออก · อาหารใน Park แพง 2–3 เท่า</div></div></div>
+      <div class="ev"><div class="ev-time">08:00–08:55</div><div class="ev-icon">🚆</div><div><div class="ev-name">Shinjuku → Maihama (DisneySea)</div><div class="chips"><span class="chip ct">JR Shonan-Shinjuku + Keiyo</span><span class="chip cp">¥430/คน</span></div><div class="ev-detail">JR Shonan-Shinjuku → เปลี่ยน Shibuya → JR Keiyo → Maihama · ~55 นาที · เดิน 5 นาที → DisneySea</div></div></div>
+      <div class="ev" id="ev-d14-disney"><div class="ev-time">09:00–21:00</div><div class="ev-icon">🏰</div><div><div class="ev-name">Tokyo DisneySea — ทั้งวัน</div><div class="chips"><span class="chip ca">จอง Klook แล้ว</span><span class="chip cp">¥7,900–9,400/คน</span></div><div class="ev-detail">วันพฤหัส ถูกกว่า Weekend<br>Priority Seating จองในแอป TDR: เปิด <strong>14 เม.ย. 10:00 JST</strong><br>⚠️ S.S. Columbia ปิดบางส่วน 15 เม.ย.–30 มิ.ย. 2026</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Tokyo+DisneySea+Urayasu" target="_blank">📍 DisneySea</a></div></div></div>
+      <div class="ev"><div class="ev-time">~12:00</div><div class="ev-icon">🍔</div><div><div class="ev-name">กลางวัน ใน Park</div><div class="chips"><span class="chip cp">¥1,400–1,900 รวม</span></div><div class="ev-detail">🥟 <strong>Gyoza Dog ¥400</strong> — China Harbor (<em>ไม่มีที่อื่นในโลก!</em>)<br>🍔 <strong>Huge Burger ¥700–900</strong> — Seaside Snacks<br>🥐 <strong>Mickey Churro ¥500</strong> — American Waterfront<br>🍿 Popcorn seasonal ¥500–700</div><div class="gmaps"><a class="gmap" href="#food-d14-lunch" onclick="jumpFood(event,'food-d14-lunch')">🍴 ดูตัวเลือก Table Service</a></div></div></div>
+      <div class="ev"><div class="ev-time">21:00–22:15</div><div class="ev-icon">🚆</div><div><div class="ev-name">กลับ Maihama → Shinjuku</div><div class="chips"><span class="chip ct">JR Keiyo → Yamanote</span><span class="chip cp">¥430/คน</span></div><div class="ev-detail">~55 นาที · ถึง Shinjuku ~22:15</div></div></div>
+      <div class="ev" id="ev-d14-nagi"><div class="ev-time">22:30–00:00</div><div class="ev-icon">🍜</div><div><div class="ev-name">เย็น ดึก — 凪 Nagi Golden Gai</div><div class="chips"><span class="chip cs">ราเม็งนิโบชิ</span><span class="chip cp">¥1,000–1,500</span></div><div class="ev-detail">Kabukicho Golden Gai 2F · เดินจากโรงแรม <strong>5 นาที</strong><br>Tabelog 3.6+ · <strong>เปิด 24 ชั่วโมง ไม่มีวันหยุด</strong> · ราเม็งนิโบชิ 20+ ชนิด</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=すごい煮干ラーメン凪+新宿+Golden+Gai" target="_blank">📍 Nagi Golden Gai</a><a class="gmap" href="#food-d14-latenight" onclick="jumpFood(event,'food-d14-latenight')">🍴 ดูตัวเลือก</a></div></div></div>
+    </div>
+  </div>
+
+  <!-- DAY 7 -->
+  <div class="day-block" id="d15">
+    <div class="day-hd" onclick="tog(this)">
+      <div class="day-num">7</div>
+      <div class="day-info"><div class="day-title">ศุกร์ 15 พ.ค. · GINZA + ASAKUSA</div><div class="day-sub">Pronto · GINZA SIX · 儀兵衛 · Senso-ji · 三定 เทมปุระ</div></div>
+      <div class="tog open">▾</div>
+    </div>
+    <div class="day-body">
+      <div class="photo-strip">
+        <div class="ph"><img src="https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=400&h=300&fit=crop" alt="Asakusa" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=400&h=300&fit=crop" alt="Ginza" loading="lazy"></div>
+        <div class="ph"><img src="https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?w=400&h=300&fit=crop" alt="Tokyo" loading="lazy"></div>
+      </div>
+      <div class="ev" id="ev-d15-breakfast"><div class="ev-time">09:00–09:45</div><div class="ev-icon">☕</div><div><div class="ev-name">เช้า — Pronto Shinjuku</div><div class="chips"><span class="chip cp">¥700–900</span></div><div class="ev-detail">กาแฟ + โทสต์ Morning set · บรรยากาศ European</div></div></div>
+      <div class="ev"><div class="ev-time">10:00</div><div class="ev-icon">🚇</div><div><div class="ev-name">Shinjuku → Ginza</div><div class="chips"><span class="chip ct">Metro Marunouchi สีแดง</span><span class="chip cp">¥210 · Suica</span></div><div class="ev-detail">ออก B16 ใต้ดิน → 7 stops → Ginza Station · ~20 นาที · ลง <strong>Exit B7</strong> (ใกล้ GINZA SIX)</div></div></div>
+      <div class="ev" id="ev-d15-ginza"><div class="ev-time">10:30–12:30</div><div class="ev-icon">🛍️</div><div><div class="ev-name">ช้อปปิ้ง Ginza</div><div class="chips"><span class="chip ca">GINZA SIX · Mitsukoshi · Itoya</span></div><div class="ev-detail">GINZA SIX · Akomeya Tokyo (ข้าวสาร 80+ ชนิด) · Ippodo Tea · Itoya เครื่องเขียน<br>วันศุกร์: ถนนปิดให้เดิน 12:00–20:00</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=GINZA+SIX+Tokyo" target="_blank">📍 GINZA SIX</a><a class="gmap" href="https://maps.google.com/?q=Akomeya+Tokyo+Ginza+アコメヤ" target="_blank">📍 Akomeya</a></div></div></div>
+      <div class="ev" id="ev-d15-lunch"><div class="ev-time">12:30–14:00</div><div class="ev-icon">🍚</div><div><div class="ev-name">กลางวัน — 八代目 儀兵衛 Gihei</div><div class="chips"><span class="chip cs">ข้าวหม้อดิน Kyoto</span><span class="chip cp">¥2,000–3,000</span></div><div class="ev-detail"><strong>Tabelog 3.60</strong> · 500+ รีวิว · คิว 20–40 นาที · เปิด 11:00–15:00<br>Ginza Exit B7 เดิน 30 วินาที · ข้าวสวยหม้อดินเกียวโต กินได้ไม่อั้น + ปลาย่าง</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=八代目儀兵衛+銀座" target="_blank">📍 儀兵衛 Gihei</a><a class="gmap" href="#food-d15-lunch" onclick="jumpFood(event,'food-d15-lunch')">🍴 ดูตัวเลือก</a></div></div></div>
+      <div class="ev"><div class="ev-time">14:30</div><div class="ev-icon">🚇</div><div><div class="ev-name">Ginza → Asakusa</div><div class="chips"><span class="chip ct">Metro Ginza สีส้ม</span><span class="chip cp">¥180</span></div><div class="ev-detail">Ginza → Asakusa Station · 4 stops · ~12 นาที · ลง <strong>Exit 1</strong> (ใกล้ Kaminarimon)</div></div></div>
+      <div class="ev" id="ev-d15-sensoji"><div class="ev-time">14:45–17:30</div><div class="ev-icon">⛩️</div><div><div class="ev-name">Senso-ji 浅草寺 + Nakamise-dori</div><div class="chips"><span class="chip ca">วัดเก่าแก่สุดโตเกียว</span><span class="chip cs">ฟรี</span></div><div class="ev-detail">Kaminarimon → Nakamise-dori (ขนมโบราณ ของฝาก) → Senso-ji · Hoppy Street เบียร์ริมวัด</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Senso-ji+Temple+Asakusa" target="_blank">📍 Senso-ji</a></div></div></div>
+      <div class="ev" id="ev-d15-dinner"><div class="ev-time">18:00–20:00</div><div class="ev-icon">🍤</div><div><div class="ev-name">เย็น — 雷門 三定 Sansada</div><div class="chips"><span class="chip cs">เทมปุระ ตั้งแต่ 1837</span><span class="chip cp">¥1,500–2,500</span></div><div class="ev-detail"><strong>Tabelog 3.55</strong> · 1,000+ รีวิว · คิว 10–20 นาที · เปิดถึง 21:30<br>Kaminarimon เดิน 1 นาที · 320 ที่นั่ง · 上天丼 + 天ぷら定食</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=雷門三定+浅草+天ぷら" target="_blank">📍 三定 Sansada</a><a class="gmap" href="#food-d15-dinner" onclick="jumpFood(event,'food-d15-dinner')">🍴 ดูตัวเลือก</a></div></div></div>
+      <div class="ev"><div class="ev-time">20:30</div><div class="ev-icon">🚇</div><div><div class="ev-name">Asakusa → Shinjuku</div><div class="chips"><span class="chip ct">Toei Asakusa Line / Metro</span><span class="chip cp">¥250</span></div><div class="ev-detail">~35–45 นาที</div></div></div>
+    </div>
+  </div>
+
+  <!-- DAY 8 -->
+  <div class="day-block" id="d16">
+    <div class="day-hd" onclick="tog(this)">
+      <div class="day-num">8</div>
+      <div class="day-info"><div class="day-title">เสาร์ 16 พ.ค. · DEPARTURE</div><div class="day-sub">Check-out · ช้อปของฝาก · Hayashida Ramen · N'EX → Narita · JL707 🏠</div></div>
+      <div class="tog open">▾</div>
+    </div>
+    <div class="day-body">
+      <div class="ev"><div class="ev-time">08:00</div><div class="ev-icon">🏪</div><div><div class="ev-name">เช้า — 7-Eleven Konbini</div><div class="chips"><span class="chip cp">¥300–600</span></div><div class="ev-detail">วันสุดท้าย กินเร็วๆ ก่อนช้อปของฝาก</div></div></div>
+      <div class="ev"><div class="ev-time">11:00</div><div class="ev-icon">🏨</div><div><div class="ev-name">Check-out + ฝากกระเป๋า Bellhop ฟรี</div><div class="ev-detail">ฝากกับ Bellhop โรงแรม ฟรี จนถึง 14:00 — ประหยัดกว่า Yamato/JAL ABC มาก</div></div></div>
+      <div class="ev"><div class="ev-time">11:15–13:30</div><div class="ev-icon">🛍️</div><div><div class="ev-name">ช้อปของฝากสุดท้าย</div><div class="chips"><span class="chip ca">Lumine · Donki · Takashimaya</span></div><div class="ev-detail">Lumine 1/2 (ติด South Exit) · Don Quijote 24hr ใกล้โรงแรม · <strong>⚠️ รับเงินคืน Tax-Free ที่ Narita ก่อนผ่าน Immigration!</strong></div></div></div>
+      <div class="ev"><div class="ev-time">13:30</div><div class="ev-icon">🏨</div><div><div class="ev-name">กลับรับกระเป๋าที่โรงแรม</div></div></div>
+      <div class="ev" id="ev-d16-lunch"><div class="ev-time">14:00–14:45</div><div class="ev-icon">🍜</div><div><div class="ev-name">กลางวัน — らぁ麺はやし田 Hayashida</div><div class="chips"><span class="chip cs">ราเม็งซุปไก่ทรัฟเฟิล</span><span class="chip cp">¥1,000–1,300</span></div><div class="ev-detail">Tabelog 3.7+ · South Exit เดิน 3 นาที · คิว 15–20 นาที<br>醤油らぁ麺 ซุปไก่ใสหอม ทรัฟเฟิล · มื้อสุดท้ายก่อนกลับ</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=らぁ麺はやし田+新宿" target="_blank">📍 Hayashida</a><a class="gmap" href="#food-d16-lunch" onclick="jumpFood(event,'food-d16-lunch')">🍴 ดูตัวเลือก</a></div></div></div>
+      <div class="ev"><div class="ev-time">15:30</div><div class="ev-icon">🚆</div><div><div class="ev-name">N'EX Shinjuku → Narita T2</div><div class="chips"><span class="chip ct">ตั๋ว Round Trip ใบกลับ</span></div><div class="ev-detail">~90 นาที · ถึง Narita T2 ~17:05<br><strong>รับเงินคืน Tax-Free</strong> ก่อนผ่าน Immigration</div></div></div>
+      <div class="ev"><div class="ev-time">18:25</div><div class="ev-icon">✈️</div><div><div class="ev-name">JL707 NRT → BKK · ถึง 23:00 🏠</div><div class="chips"><span class="chip ct">Japan Airlines</span></div></div></div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ═══════ SECTION 2: FOOD GUIDE ═══════ -->
+<section id="s2" style="background:linear-gradient(180deg,var(--sakura-50) 0%,var(--cream) 100%);">
+<div class="wrap">
+  <div class="sec-hd">
+    <div class="sec-num">02</div>
+    <div><div class="sec-title">FOOD GUIDE</div><div class="sec-sub">ทุกมื้อทุกวัน · ✓ เลือกแล้ว · Optional = ทางเลือก · ★ Wishlist</div></div>
+  </div>
+
+  <!-- DAY 1 -->
+  <div class="meal-day">
+    <div class="meal-day-title">Day 1 · 9 พ.ค. — Arrival Day</div>
+    <div class="meal-block"><div class="meal-hd"><span class="meal-time">07:55</span><span class="meal-name">✈️ เช้า — บนเครื่อง JAL</span></div><div class="meal-body"><div class="r-card chosen"><div class="r-name">Japan Airlines Meal</div><div class="r-detail">อาหารญี่ปุ่น/นานาชาติ รวมในราคาตั๋ว JL708</div></div></div></div>
+    <div class="meal-block" id="food-d9-dinner1">
+      <div class="meal-hd"><span class="meal-time">19:30</span><span class="meal-name">🍜 เย็น ① — ราเม็ง</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">Ichiran Ramen 一蘭 <span class="r-jp">Kabukicho</span></div><div class="chips"><span class="chip cs">Tonkotsu Solo</span><span class="chip cp">¥1,000–1,200</span></div><div class="r-detail">เดิน 8 นาที East · เปิด 24hr · ⭐ 3.68</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Ichiran+Shinjuku+Kabukicho" target="_blank">📍 Maps</a><a class="gmap" href="#ev-d9-ichiran" onclick="jumpTL(event,'ev-d9-ichiran')">← Timeline</a></div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">Fuunji 風雲児</div><div class="chips"><span class="chip cp">¥1,000–1,300</span></div><div class="r-detail">สึเกะเมน ⭐ 3.78 百名店 · คิว 30–60 นาที · West Exit 12 นาที</div></div>
+      </div>
+    </div>
+    <div class="meal-block"><div class="meal-hd"><span class="meal-time">20:30</span><span class="meal-name">🍢 เย็น ② — Omoide Yokocho</span></div><div class="meal-body"><div class="r-card chosen"><div class="r-name">Omoide Yokocho 思い出横丁</div><div class="chips"><span class="chip cs">Yakitori</span><span class="chip cp">¥2,000–3,000</span></div><div class="r-detail">เดิน 12 นาที West · บรรยากาศย้อนยุค Showa</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Omoide+Yokocho+Shinjuku" target="_blank">📍 Maps</a></div></div></div></div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div class="meal-day">
+    <div class="meal-day-title">Day 2 · 10 พ.ค. — Kamakura</div>
+    <div class="meal-block"><div class="meal-hd"><span class="meal-time">08:30</span><span class="meal-name">🍙 เช้า</span></div><div class="meal-body"><div class="r-card chosen"><div class="r-name">Panda Onigiri ぱん田</div><div class="chips"><span class="chip cp">¥800–1,200</span></div><div class="r-detail">Shinjuku East Exit 3–5 นาที · เปิด 09:00</div></div></div></div>
+    <div class="meal-block" id="food-d10-lunch">
+      <div class="meal-hd"><span class="meal-time">11:30</span><span class="meal-name">🍱 กลางวัน — ชิราสึ</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">Gohachitenpu Goshichi 五八天麩羅 五七</div><div class="chips"><span class="chip cs">ชิราสึ+เทมปุระ</span><span class="chip cp">¥1,500–2,000</span></div><div class="r-detail">Komachi-dori 5 นาที · ⭐ 3.55</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=五八天麩羅五七+鎌倉" target="_blank">📍 Maps</a><a class="gmap" href="#ev-d10-lunch" onclick="jumpTL(event,'ev-d10-lunch')">← Timeline</a></div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">Caraway カラウェイ</div><div class="chips"><span class="chip cp">¥900–1,200</span></div><div class="r-detail">แกงกะหรี่ดัง 1970s · East Exit 2 นาที · ⭐ 3.58</div></div>
+      </div>
+    </div>
+    <div class="meal-block" id="food-d10-dinner">
+      <div class="meal-hd"><span class="meal-time">18:00</span><span class="meal-name">🐟 เย็น — AKATSUKI</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">AKATSUKI 赤月 <span class="r-jp">長谷</span></div><div class="chips"><span class="chip cs">Aged Bluefin Tuna</span><span class="chip cp">¥3,000–5,000</span></div><div class="r-detail"><strong>จองล่วงหน้า!</strong> Hase 3 นาที · ⭐ 3.5+</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=AKATSUKI+Kamakura+Hase" target="_blank">📍 Maps</a><a class="gmap" href="#ev-d10-akatsuki" onclick="jumpTL(event,'ev-d10-akatsuki')">← Timeline</a></div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">Shirasu-ya Koshigoe 腰越しらすや</div><div class="chips"><span class="chip cp">¥1,500–2,500</span></div><div class="r-detail">Koshigoe Station 5 นาที · ชิราสึดิบสด · ⭐ 3.71</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div class="meal-day">
+    <div class="meal-day-title">Day 3 · 11 พ.ค. — Ikebukuro</div>
+    <div class="meal-block" id="food-d11-breakfast">
+      <div class="meal-hd"><span class="meal-time">09:00</span><span class="meal-name">☕ เช้า</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">Doutor Coffee ドトール</div><div class="chips"><span class="chip cp">¥600–900</span></div><div class="r-detail">แถว Kabukicho · กาแฟ+แซนด์วิช Morning set</div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">Pronto / Excelsior Café</div><div class="chips"><span class="chip cp">¥700–1,000</span></div><div class="r-detail">บรรยากาศดีกว่า Doutor · ใกล้โรงแรม</div></div>
+      </div>
+    </div>
+    <div class="meal-block" id="food-d11-lunch">
+      <div class="meal-hd"><span class="meal-time">12:00</span><span class="meal-name">🍣 กลางวัน — ซูชิ Ikebukuro</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">Sushimamire すしまみれ <span class="r-jp">池袋</span></div><div class="chips"><span class="chip cs">ซูชิยืนกิน</span><span class="chip cp">¥1,000–1,500</span></div><div class="r-detail">West Exit 2 นาที · เปิด 24hr · Maguro set ¥980 · ⭐ 3.5+</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=すしまみれ+池袋西口" target="_blank">📍 Maps</a><a class="gmap" href="#ev-d11-lunch" onclick="jumpTL(event,'ev-d11-lunch')">← Timeline</a></div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">Hinazushi Labi Ikebukuro 雛鮨</div><div class="chips"><span class="chip cp">¥4,300–4,900</span></div><div class="r-detail">ซูชิ Premium · ใน LABI1 Ikebukuro</div></div>
+        <div class="wish-label">★ Wishlist</div>
+        <div class="r-card wish"><div class="r-name">Unitora Nakadori うに虎 <span class="r-jp">築地</span></div><div class="chips"><span class="chip cp">¥3,000–6,000</span></div><div class="r-detail">Tsukiji · ซูชิ Uni สด Toyosu · เปิด 10:00–22:00</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Unitora+Nakadori+Tsukiji" target="_blank">📍 Maps</a></div></div>
+      </div>
+    </div>
+    <div class="meal-block" id="food-d11-dinner">
+      <div class="meal-hd"><span class="meal-time">19:00</span><span class="meal-name">🥩 เย็น — Yakiniku</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">Gyukaku Shinjuku 牛角</div><div class="chips"><span class="chip cs">Yakiniku</span><span class="chip cp">¥2,000–3,500</span></div><div class="r-detail">ใกล้โรงแรม 5–10 นาที · ⭐ 3.45</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=牛角+新宿歌舞伎町" target="_blank">📍 Maps</a><a class="gmap" href="#ev-d11-dinner" onclick="jumpTL(event,'ev-d11-dinner')">← Timeline</a></div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">Tokori Nova とこり nova</div><div class="chips"><span class="chip cp">¥3,000–6,000</span></div><div class="r-detail">ชาบูชาบูวากิว ระดับสูง</div></div>
+        <div class="r-card opt"><div class="r-name">San Kou En 三光園</div><div class="chips"><span class="chip cp">¥3,000–5,000</span></div><div class="r-detail">ยากินิกุเก่าแก่ดัง Tokyo · บรรยากาศดีกว่า Gyukaku</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 4 -->
+  <div class="meal-day">
+    <div class="meal-day-title">Day 4 · 12 พ.ค. — Fuji Day 1</div>
+    <div class="meal-block"><div class="meal-hd"><span class="meal-time">07:30</span><span class="meal-name">🏪 เช้า — Konbini</span></div><div class="meal-body"><div class="r-card chosen"><div class="r-name">7-Eleven ใกล้โรงแรม</div><div class="chips"><span class="chip cp">¥500–700</span></div><div class="r-detail">ข้าวปั้น + กาแฟ + ขนม ก่อน Check-out</div></div></div></div>
+    <div class="meal-block"><div class="meal-hd"><span class="meal-time">12:10</span><span class="meal-name">🍲 กลางวัน — โฮโต้</span></div><div class="meal-body"><div class="r-card chosen"><div class="r-name">Hoto Fudo ほうとう不動</div><div class="chips"><span class="chip cs">โฮโต้ Local</span><span class="chip cp">¥1,200–1,600</span></div><div class="r-detail">Google 4.2 · 3,000+ รีวิว · เส้นหนา ซุปมิโสะน้ำฟักทอง</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Hoto+Fudo+Kawaguchiko" target="_blank">📍 Maps</a></div></div></div></div>
+    <div class="meal-block" id="food-d12-dinner">
+      <div class="meal-hd"><span class="meal-time">19:30</span><span class="meal-name">🐠 เย็น — Restaurant KONAMI</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">Restaurant KONAMI 湖波</div><div class="chips"><span class="chip cs">วิวฟูจิ</span><span class="chip cp">¥1,500–2,500</span></div><div class="r-detail"><strong>เมนูภาษาไทย ✅</strong> · เปิด 10:00–21:00 · ริมทะเลสาบ</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Restaurant+Konami+Kawaguchiko+湖波" target="_blank">📍 Maps</a><a class="gmap" href="#ev-d12-dinner" onclick="jumpTL(event,'ev-d12-dinner')">← Timeline</a></div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">焼肉 ひまわり亭 Himawari-tei</div><div class="chips"><span class="chip cp">¥2,000–3,500</span></div><div class="r-detail">Yakiniku ถ่านไฟ Local ดัง · Google 4.2</div></div>
+        <div class="r-card opt"><div class="r-name">Kaiseki ในโรงแรม</div><div class="chips"><span class="chip cp">¥5,000–10,000</span></div><div class="r-detail">Japanese Full Course วิวฟูจิ · จองล่วงหน้า</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 5 -->
+  <div class="meal-day">
+    <div class="meal-day-title">Day 5 · 13 พ.ค. — Fuji Day 2 + กลับ Shinjuku</div>
+    <div class="meal-block" id="food-d13-breakfast">
+      <div class="meal-hd"><span class="meal-time">09:30</span><span class="meal-name">☕ เช้า — เบเกอรี่วิวฟูจิ</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">旅の駅 kawaguchiko base</div><div class="chips"><span class="chip cp">¥800–1,200</span></div><div class="r-detail">เปิด 09:30 · ขนมปังมือ 70 ปี · วิวฟูจิจากในร้าน</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=旅の駅+kawaguchiko+base" target="_blank">📍 Maps</a></div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">7-Eleven Kawaguchiko</div><div class="chips"><span class="chip cp">¥300–600</span></div><div class="r-detail">ถ้าออกเช้ามาก / เวลาน้อย</div></div>
+      </div>
+    </div>
+    <div class="meal-block" id="food-d13-lunch">
+      <div class="meal-hd"><span class="meal-time">12:00</span><span class="meal-name">🍜 กลางวัน — Yoshida Udon</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">Yoshida Udon 吉田うどん</div><div class="chips"><span class="chip cs">อุด้ง Fuji Style</span><span class="chip cp">¥600–900</span></div><div class="r-detail">เส้นหนาเหนียว ซุปเข้ม · ราคาถูกมาก</div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">Hoto Fudo (ถ้าไม่ได้กินวัน 12)</div><div class="chips"><span class="chip cp">¥1,200–1,600</span></div><div class="r-detail">Google 4.2 · ถ้าพลาดวันก่อน</div></div>
+      </div>
+    </div>
+    <div class="meal-block" id="food-d13-dinner">
+      <div class="meal-hd"><span class="meal-time">20:00</span><span class="meal-name">🍜 เย็น — กลับ Shinjuku</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">Menya Kaijin 麺屋海神</div><div class="chips"><span class="chip cs">ราเม็งซุปปลาอาระ</span><span class="chip cp">¥1,000–1,200</span></div><div class="r-detail">East South Exit 30 วินาที · ⭐ 3.76 百名店 · เปิดถึง 23:30</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=麺屋海神+新宿" target="_blank">📍 Maps</a><a class="gmap" href="#ev-d13-dinner" onclick="jumpTL(event,'ev-d13-dinner')">← Timeline</a></div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">Fuunji 風雲児</div><div class="chips"><span class="chip cp">¥1,000–1,300</span></div><div class="r-detail">สึเกะเมน · ⭐ 3.78 百名店</div></div>
+        <div class="r-card opt"><div class="r-name">Ichiran Ramen</div><div class="chips"><span class="chip cp">¥1,000–1,200</span></div><div class="r-detail">เปิด 24hr · ถ้าเหนื่อยมากอยากกินง่ายๆ</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 6 -->
+  <div class="meal-day">
+    <div class="meal-day-title">Day 6 · 14 พ.ค. — DisneySea</div>
+    <div class="meal-block"><div class="meal-hd"><span class="meal-time">07:00</span><span class="meal-name">🏪 เช้า — Konbini</span></div><div class="meal-body"><div class="r-card chosen"><div class="r-name">7-Eleven ก่อนออกจากโรงแรม</div><div class="chips"><span class="chip cp">¥300–600</span></div><div class="r-detail">กินก่อนออก · อาหารใน Park แพง 2–3 เท่า</div></div></div></div>
+    <div class="meal-block" id="food-d14-lunch">
+      <div class="meal-hd"><span class="meal-time">~12:00</span><span class="meal-name">🎪 กลางวัน — ใน DisneySea</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">Counter Service Must-Eat 🥟🍔🥐</div><div class="chips"><span class="chip cp">¥1,400–1,900 รวม</span></div><div class="r-detail">🥟 <strong>Gyoza Dog ¥400</strong> China Harbor (ไม่มีที่อื่นในโลก!) · 🍔 Huge Burger ¥700–900 · 🥐 Mickey Churro ¥500</div></div>
+        <div class="sec-label">▸ Optional Table Service</div>
+        <div class="r-card opt"><div class="r-name">Ristorante di Canaletto</div><div class="chips"><span class="chip cp">¥3,000–5,000</span></div><div class="r-detail">Italian วิวน้ำ Mediterranean Harbor · จองแอป TDR ล่วงหน้า</div></div>
+      </div>
+    </div>
+    <div class="meal-block" id="food-d14-latenight">
+      <div class="meal-hd"><span class="meal-time">22:30</span><span class="meal-name">🌙 เย็น ดึก — Nagi Golden Gai</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">すごい煮干ラーメン 凪 Golden Gai</div><div class="chips"><span class="chip cs">ราเม็งนิโบชิ</span><span class="chip cp">¥1,000–1,500</span></div><div class="r-detail">เดิน <strong>5 นาที</strong> · <strong>เปิด 24hr</strong> · ⭐ 3.6+</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=凪+すごい煮干ラーメン+Golden+Gai+Shinjuku" target="_blank">📍 Maps</a><a class="gmap" href="#ev-d14-nagi" onclick="jumpTL(event,'ev-d14-nagi')">← Timeline</a></div></div>
+        <div class="sec-label">▸ Optional ดึก Kabukicho</div>
+        <div class="r-card opt"><div class="r-name">わ蔵 Wakura</div><div class="chips"><span class="chip cp">¥900–1,200</span></div><div class="r-detail">Hakata Tonkotsu · เดิน 3 นาที · เปิด 24hr</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 7 -->
+  <div class="meal-day">
+    <div class="meal-day-title">Day 7 · 15 พ.ค. — Ginza + Asakusa</div>
+    <div class="meal-block"><div class="meal-hd"><span class="meal-time">09:00</span><span class="meal-name">☕ เช้า</span></div><div class="meal-body"><div class="r-card chosen"><div class="r-name">Pronto Shinjuku</div><div class="chips"><span class="chip cp">¥700–900</span></div><div class="r-detail">กาแฟ + โทสต์ + ยุเดะทามาโกะ</div></div></div></div>
+    <div class="meal-block" id="food-d15-lunch">
+      <div class="meal-hd"><span class="meal-time">12:30</span><span class="meal-name">🍚 กลางวัน — Ginza</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">八代目 儀兵衛 Gihei <span class="r-jp">銀座</span></div><div class="chips"><span class="chip cs">ข้าวหม้อดิน</span><span class="chip cp">¥2,000–3,000</span></div><div class="r-detail">Exit B7 เดิน 30 วินาที · เปิด 11:00–15:00 · ⭐ 3.60</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=八代目儀兵衛+銀座" target="_blank">📍 Maps</a><a class="gmap" href="#ev-d15-lunch" onclick="jumpTL(event,'ev-d15-lunch')">← Timeline</a></div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">銀座スイス Ginza Swiss</div><div class="chips"><span class="chip cp">¥1,500–2,000</span></div><div class="r-detail">Katsu Curry ต้นตำรับ 1950s · ⭐ 3.52</div></div>
+        <div class="wish-label">★ Wishlist Tsukiji</div>
+        <div class="r-card wish"><div class="r-name">Unitora Nakadori うに虎 築地</div><div class="chips"><span class="chip cp">¥3,000–6,000</span></div><div class="r-detail">เดินจาก Ginza ~15 นาที · Uni สด Toyosu</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=Unitora+Nakadori+Tsukiji+築地" target="_blank">📍 Maps</a></div></div>
+      </div>
+    </div>
+    <div class="meal-block" id="food-d15-dinner">
+      <div class="meal-hd"><span class="meal-time">18:00</span><span class="meal-name">🍤 เย็น — Asakusa เทมปุระ</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">雷門 三定 Sansada <span class="r-jp">浅草</span></div><div class="chips"><span class="chip cs">เทมปุระ ตั้งแต่ 1837</span><span class="chip cp">¥1,500–2,500</span></div><div class="r-detail">Kaminarimon เดิน 1 นาที · ⭐ 3.55</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=雷門三定+浅草+天ぷら" target="_blank">📍 Maps</a><a class="gmap" href="#ev-d15-dinner" onclick="jumpTL(event,'ev-d15-dinner')">← Timeline</a></div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">大黒家天麩羅 Daikokuya</div><div class="chips"><span class="chip cp">¥1,500–2,500</span></div><div class="r-detail">เทมปุระ ตั้งแต่ 1887 · ⭐ 3.56</div></div>
+        <div class="r-card opt"><div class="r-name">あかし Akashi</div><div class="chips"><span class="chip cp">¥5,000+</span></div><div class="r-detail">เทมปุระ Course · ต้องจองล่วงหน้า · ⭐ 3.61</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DAY 8 -->
+  <div class="meal-day">
+    <div class="meal-day-title">Day 8 · 16 พ.ค. — Departure</div>
+    <div class="meal-block"><div class="meal-hd"><span class="meal-time">08:00</span><span class="meal-name">🏪 เช้า</span></div><div class="meal-body"><div class="r-card chosen"><div class="r-name">7-Eleven ใกล้โรงแรม</div><div class="chips"><span class="chip cp">¥300–600</span></div><div class="r-detail">กินเร็วก่อนช้อปของฝาก</div></div></div></div>
+    <div class="meal-block" id="food-d16-lunch">
+      <div class="meal-hd"><span class="meal-time">14:00</span><span class="meal-name">🍜 กลางวัน — ก่อน N'EX</span></div>
+      <div class="meal-body">
+        <div class="r-card chosen"><div class="r-name">らぁ麺はやし田 Hayashida Ramen</div><div class="chips"><span class="chip cs">ราเม็งซุปไก่ทรัฟเฟิล</span><span class="chip cp">¥1,000–1,300</span></div><div class="r-detail">South Exit 3 นาที · มื้อสุดท้ายก่อนกลับ · ⭐ 3.7+</div><div class="gmaps"><a class="gmap" href="https://maps.google.com/?q=らぁ麺はやし田+新宿" target="_blank">📍 Maps</a><a class="gmap" href="#ev-d16-lunch" onclick="jumpTL(event,'ev-d16-lunch')">← Timeline</a></div></div>
+        <div class="sec-label">▸ Optional</div>
+        <div class="r-card opt"><div class="r-name">Odakyu Halc B2 Food Hall</div><div class="chips"><span class="chip cp">¥800–1,500</span></div><div class="r-detail">ติด West Exit · เบนโตะ+ซูชิ+ราเม็ง</div></div>
+        <div class="r-card opt"><div class="r-name">Narita T2 Airport Restaurant</div><div class="chips"><span class="chip cp">¥1,000–2,000</span></div><div class="r-detail">หลังผ่าน Security · Ramen / Sushi</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</section>
+
+<!-- ═══════ SECTION 3: INTERACTIVE MAPS ═══════ -->
+<section id="s3" style="background:var(--cream);">
+<div class="wrap">
+  <div class="sec-hd">
+    <div class="sec-num">03</div>
+    <div><div class="sec-title">MAPS</div><div class="sec-sub">แผนที่ Interactive แต่ละวัน · คลิก marker เพื่อดูรายละเอียด + Google Maps</div></div>
+  </div>
+  <div class="map-day"><div class="map-hd"><span class="mday">Day 1 · 9 พ.ค.</span><span class="mname">Arrival — Narita → Shinjuku</span></div><div class="leaflet-map" id="map1"></div></div>
+  <div class="map-day"><div class="map-hd"><span class="mday">Day 2 · 10 พ.ค.</span><span class="mname">Kamakura Day Trip</span></div><div class="leaflet-map" id="map2"></div></div>
+  <div class="map-day"><div class="map-hd"><span class="mday">Day 3 · 11 พ.ค.</span><span class="mname">Ikebukuro + Akihabara</span></div><div class="leaflet-map" id="map3"></div></div>
+  <div class="map-day"><div class="map-hd"><span class="mday">Day 4 · 12 พ.ค.</span><span class="mname">Mt. Fuji Drive Day 1</span></div><div class="leaflet-map" id="map4"></div></div>
+  <div class="map-day"><div class="map-hd"><span class="mday">Day 5 · 13 พ.ค.</span><span class="mname">Fuji Day 2 → กลับ Shinjuku</span></div><div class="leaflet-map" id="map5"></div></div>
+  <div class="map-day"><div class="map-hd"><span class="mday">Day 6 · 14 พ.ค.</span><span class="mname">DisneySea → Nagi Golden Gai</span></div><div class="leaflet-map" id="map6"></div></div>
+  <div class="map-day"><div class="map-hd"><span class="mday">Day 7 · 15 พ.ค.</span><span class="mname">Ginza + Asakusa</span></div><div class="leaflet-map" id="map7"></div></div>
+  <div class="map-day"><div class="map-hd"><span class="mday">Day 8 · 16 พ.ค.</span><span class="mname">Departure — Shinjuku → Narita</span></div><div class="leaflet-map" id="map8"></div></div>
+</div>
+</section>
+
+<!-- ═══════ SECTION 4: ATTRACTIONS ═══════ -->
+<section id="s4" style="background:linear-gradient(180deg,var(--lavender-50) 0%,var(--cream) 100%);">
+<div class="wrap">
+  <div class="sec-hd"><div class="sec-num">04</div><div><div class="sec-title">สถานที่ท่องเที่ยว</div><div class="sec-sub">ทุกสถานที่แต่ละวัน + ★ Wishlist</div></div></div>
+  <div class="attr-grid">
+    <div class="attr-card"><div class="attr-day">Day 1 ✓</div><div class="attr-name">👟 Alpen Tokyo</div><div class="attr-detail">On Cloud 30+ รุ่น · East Exit 1 นาที · ¥15,000–25,000 · เปิดถึง 22:00</div><a class="gmap" href="https://maps.google.com/?q=Alpen+Tokyo+Shinjuku" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 1 ✓</div><div class="attr-name">🍢 Omoide Yokocho</div><div class="attr-detail">ซอยยากิโทริย้อนยุค Showa · West Exit 12 นาที · ไม่ต้องรอ</div><a class="gmap" href="https://maps.google.com/?q=Omoide+Yokocho+Shinjuku" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 2 ✓</div><div class="attr-name">⛩️ Kotoku-in ไดบุตสึ</div><div class="attr-detail">พระสัมฤทธิ์ สูง 13.35 ม. · Hase 10 นาที · ¥300</div><a class="gmap" href="https://maps.google.com/?q=Kotoku-in+Great+Buddha" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 2 ✓</div><div class="attr-name">🌸 Hasedera 長谷寺</div><div class="attr-detail">วัดดอกไม้ วิวทะเล ถ้ำกวนอิม · Hase 5 นาที · ¥400</div><a class="gmap" href="https://maps.google.com/?q=Hasedera+Temple+Kamakura" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 2 ✓</div><div class="attr-name">📸 Slam Dunk Crossing</div><div class="attr-detail">Kamakura-kokomae ออกประตูหน้าทันที · Anime Landmark · ฟรี</div><a class="gmap" href="https://maps.google.com/?q=鎌倉高校前踏切" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 2 ✓</div><div class="attr-name">🌊 Shichirigahama Beach</div><div class="attr-detail">ชายหาด 7 ลี้ · วิวฟูจิถ้าฟ้าใส · bills restaurant ติด · ฟรี</div><a class="gmap" href="https://maps.google.com/?q=Shichirigahama+Beach" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 3 ✓</div><div class="attr-name">🛍️ Tobu Ikebukuro + Uniqlo</div><div class="attr-detail">Uniqlo 9F–10F · คูปอง 5% ที่ 2F · Tax-Free · Matsukiyo + ABC-MART</div><a class="gmap" href="https://maps.google.com/?q=Tobu+Department+Store+Ikebukuro" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 3 ✓</div><div class="attr-name">🔌 Akihabara</div><div class="attr-detail">Electronics · Anime · Yodobashi Camera · ¥210 จาก Ikebukuro</div><a class="gmap" href="https://maps.google.com/?q=Akihabara+Electric+Town" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 4 ✓</div><div class="attr-name">🌸 Oishi Park 大石公園</div><div class="attr-detail">วิวฟูจิ Postcard · โคเซ็นโซ+ลาเวนเดอร์ พ.ค. · ฟรี</div><a class="gmap" href="https://maps.google.com/?q=Oishi+Park+大石公園" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 4 ✓</div><div class="attr-name">⛩️ Oshino Hakkai 忍野八海</div><div class="attr-detail">UNESCO · บ่อน้ำลาวา 80 ปี ดื่มได้ · บ้านหลังคาฟาง · ฟรี</div><a class="gmap" href="https://maps.google.com/?q=Oshino+Hakkai" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 4 ✓</div><div class="attr-name">🦢 Lake Yamanakako</div><div class="attr-detail">ทะเลสาบใหญ่สุด Fuji Five Lakes · นกหงส์ขาว · Golden Hour · ฟรี</div><a class="gmap" href="https://maps.google.com/?q=Lake+Yamanakako" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 6 ✓</div><div class="attr-name">🏰 Tokyo DisneySea</div><div class="attr-detail">จอง Klook · ¥7,900–9,400/คน · Priority Seating 14 เม.ย.</div><a class="gmap" href="https://maps.google.com/?q=Tokyo+DisneySea" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 7 ✓</div><div class="attr-name">🏙️ GINZA SIX + Akomeya</div><div class="attr-detail">ช้อป Luxury · Akomeya ข้าวสาร 80 ชนิด · ถนนปิดศุกร์ 12–20 น.</div><a class="gmap" href="https://maps.google.com/?q=GINZA+SIX" target="_blank">📍 Maps</a></div>
+    <div class="attr-card"><div class="attr-day">Day 7 ✓</div><div class="attr-name">⛩️ Senso-ji 浅草寺</div><div class="attr-detail">วัดเก่าแก่สุด · Kaminarimon · Nakamise ของฝาก · ฟรี</div><a class="gmap" href="https://maps.google.com/?q=Senso-ji+Asakusa" target="_blank">📍 Maps</a></div>
+    <div class="attr-card wish"><div class="attr-day w">★ Wishlist</div><div class="attr-name">🎌 Harajuku + Omotesando</div><div class="attr-detail">Takeshita Street · Ura-Harajuku · Flagship stores</div><a class="gmap" href="https://maps.google.com/?q=Harajuku+Takeshita+Street" target="_blank">📍 Maps</a></div>
+    <div class="attr-card wish"><div class="attr-day w">★ Wishlist — Day 5</div><div class="attr-name">🌋 Mt. Fuji 5th Station</div><div class="attr-detail">Subaru Line · ขับ ~45 นาที · ระดับ 2,305 ม.</div><a class="gmap" href="https://maps.google.com/?q=Fuji+Subaru+Line+5th+Station" target="_blank">📍 Maps</a></div>
+    <div class="attr-card wish"><div class="attr-day w">★ Wishlist</div><div class="attr-name">🐟 Tsukiji Outer Market</div><div class="attr-detail">ตลาดปลา · Unitora Nakadori Uni · เดินจาก Ginza 15 นาที</div><a class="gmap" href="https://maps.google.com/?q=Tsukiji+Outer+Market" target="_blank">📍 Maps</a></div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════ SECTION 5: TIPS ═══════ -->
+<section id="s5" style="background:linear-gradient(180deg,var(--mint-50) 0%,var(--cream) 100%);">
+<div class="wrap">
+  <div class="sec-hd"><div class="sec-num">05</div><div><div class="sec-title">TRAVEL TIPS</div><div class="sec-sub">สิ่งที่คนไทยไปญี่ปุ่นควรรู้ · Checklist · ประโยคพื้นฐาน</div></div></div>
+  <div class="tips-grid">
+    <div class="tip-card"><h3>📶 eSIM & Internet</h3>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>ซื้อ Airalo</strong> ก่อนบิน · ติดตั้งขณะมี WiFi</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">ถึง Narita: เปิด Data Roaming ของ eSIM line เท่านั้น</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">10GB เพียงพอ 8 วัน (~800MB/วัน)</span></div>
+    </div>
+    <div class="tip-card"><h3>🚆 รถไฟ & Suica</h3>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>Suica ใน iPhone:</strong> Wallet → Add Card → Suica</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>N'EX ≠ Suica</strong> ต้องซื้อตั๋วต่างหาก</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">JR Shonan-Shinjuku → ขบวน <strong>Zushi/Yokosuka เท่านั้น!</strong></span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">เติม Suica: ตู้สถานี กด "チャージ"</span></div>
+    </div>
+    <div class="tip-card"><h3>🚗 ขับรถในญี่ปุ่น</h3>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>ชิดซ้าย</strong> เหมือนไทย · พวงมาลัยขวา</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>ETC Card</strong> รับพร้อมรถ ใส่ช่องใน Dash ผ่านด่านได้เลย</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">เติมน้ำมัน レギュラー Full ก่อนคืนรถ</span></div>
+    </div>
+    <div class="tip-card"><h3>💴 เงิน & Tax-Free 2026</h3>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>ระบบใหม่ 2026:</strong> จ่ายเต็ม → รับคืน 10% ที่ Narita T2 ก่อน Immigration</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">ต้องซื้อ ≥¥5,500 + โชว์ Passport</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">ATM: 7-Eleven / Japan Post · ภาษาอังกฤษได้</span></div>
+    </div>
+    <div class="tip-card"><h3>🍜 มารยาทร้านอาหาร</h3>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">ราเม็ง: <strong>กดตั๋วก่อนนั่ง</strong> เลือกเมนู ใส่เงิน</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>ไม่ต้องให้ทิป</strong> ผิดมารยาทด้วยซ้ำ</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">ขอน้ำ: "お水ください" · ฟรีทุกร้าน</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">เช็คบิล: "お会計お願いします"</span></div>
+    </div>
+    <div class="tip-card"><h3>🗣️ ประโยคพื้นฐาน</h3>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>สวัสดี:</strong> こんにちは Konnichiwa</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>ขอบคุณ:</strong> ありがとうございます</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>ห้องน้ำ:</strong> トイレはどこですか</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>ขอโทษ:</strong> すみません Sumimasen</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>อร่อย:</strong> おいしい Oishii ← พูดได้เลย เจ้าของดีใจ</span></div>
+    </div>
+    <div class="tip-card"><h3>🛍️ Shopping Tips</h3>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">Uniqlo ญี่ปุ่น <strong>ถูกกว่าไทย 25–30%</strong></span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">Don Quijote เปิด 24hr · ทุกอย่างราคาถูก</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">ขนาดญี่ปุ่น: L ≈ M ไทย · ลองก่อนซื้อ</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">Matsukiyo: Hada Labo / Melano CC ถูกกว่าไทยมาก</span></div>
+    </div>
+    <div class="tip-card"><h3>⚠️ มารยาท & กฎ</h3>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">บนรถไฟ: ห้ามคุยโทรศัพท์ · ปิดเสียง</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">บันไดเลื่อน: ยืนซ้าย (Tokyo)</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">ขยะ: ไม่มีถังสาธารณะ · ทิ้งที่ Konbini</span></div>
+    </div>
+    <div class="tip-card"><h3>📱 App ที่ต้องโหลด</h3>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>Google Maps</strong> — Download Offline Tokyo+Kawaguchiko+Kamakura</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>Google Translate</strong> — Camera mode แปลป้ายทันที</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>Tokyo Disney Resort</strong> — Priority Seating + Wait Time</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>Yahoo!天気</strong> — พยากรณ์แม่นสุดในญี่ปุ่น</span></div>
+    </div>
+    <div class="tip-card"><h3>✅ Checklist ก่อนไป</h3>
+      <label class="check-item"><input type="checkbox"> <span class="tt2">ติดตั้ง eSIM Airalo ก่อนบิน (WiFi)</span></label>
+      <label class="check-item"><input type="checkbox"> <span class="tt2">ตั้ง Suica ใน Apple Wallet</span></label>
+      <label class="check-item"><input type="checkbox"> <span class="tt2">จอง AKATSUKI Kamakura ออนไลน์ (Day 2)</span></label>
+      <label class="check-item"><input type="checkbox"> <span class="tt2">จอง DisneySea Priority Seating 14 เม.ย. 10:00 JST</span></label>
+      <label class="check-item"><input type="checkbox"> <span class="tt2">เตรียมใบขับขี่สากล (รับรถ Day 4)</span></label>
+      <label class="check-item"><input type="checkbox"> <span class="tt2">Download Google Maps Offline (Tokyo, Kawaguchiko, Kamakura)</span></label>
+      <label class="check-item"><input type="checkbox"> <span class="tt2">โหลดแอป Tokyo Disney Resort</span></label>
+      <label class="check-item"><input type="checkbox"> <span class="tt2">เตรียมเสื้อแจ็คเกต (Kawaguchiko กลางคืน 10°C)</span></label>
+    </div>
+    <div class="tip-card"><h3>🌡️ อากาศ & ฉุกเฉิน</h3>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">Tokyo: 18–25°C · Kawaguchiko: <strong>10–20°C กลางคืน ~10°C</strong></span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">เดิน 15,000–20,000 ก้าว/วัน · รองเท้าสบาย</span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2"><strong>ตำรวจ: 110 · พยาบาล: 119</strong></span></div>
+      <div class="tip-item"><span class="tb">▸</span><span class="tt2">JNTO: 050-3816-2787 (24hr ไทยได้)</span></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<footer>
+  <div style="font-family:'Cormorant Garamond',serif;color:var(--sakura-700);font-size:1rem;font-weight:700;margin-bottom:.4rem;">🌸 JAPAN TRIP 2026</div>
+  <div>9–16 พฤษภาคม 2026 · Shinjuku · Kamakura · Fuji · DisneySea · Ginza · Asakusa</div>
+  <div style="margin-top:.4rem;font-size:.68rem;color:var(--ink-mute);">ข้อมูลอาจเปลี่ยนแปลงได้ กรุณาตรวจสอบก่อนไป</div>
+</footer>
+
+<script>
+// ── SAKURA ──
+const C=document.getElementById('sk');const X=C.getContext('2d');
+function rsz(){C.width=innerWidth;C.height=innerHeight;}rsz();window.addEventListener('resize',rsz);
+const P=[];for(let i=0;i<50;i++)P.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,s:Math.random()*7+4,v:Math.random()*1.1+.3,w:Math.random()*1-.5,r:Math.random()*Math.PI*2,rs:(Math.random()-.5)*.035,o:Math.random()*.2+.05,sw:Math.random()*1.4,sf:Math.random()*.018,so:Math.random()*Math.PI*2,h:Math.floor(Math.random()*5)});
+const cols=['#f5a8c0','#d65c80','#ec85a3','#fbd0dd','#e880a8'];let t=0;
+function draw(){X.clearRect(0,0,C.width,C.height);t+=.01;P.forEach(p=>{p.y+=p.v;p.x+=p.w+Math.sin(t*p.sf+p.so)*p.sw;p.r+=p.rs;if(p.y>C.height+20){p.y=-20;p.x=Math.random()*C.width;}X.save();X.translate(p.x,p.y);X.rotate(p.r);X.globalAlpha=p.o;X.beginPath();X.fillStyle=cols[p.h];X.ellipse(0,0,p.s*.5,p.s,0,0,Math.PI*2);X.fill();X.restore();});requestAnimationFrame(draw);}draw();
+
+// ── ACCORDION ──
+function tog(hd){const body=hd.nextElementSibling;const icon=hd.querySelector('.tog');body.classList.toggle('hide');icon.classList.toggle('open');}
+
+// ── CROSS-LINKS ──
+function jumpFood(e,id){e.preventDefault();const el=document.getElementById(id);if(el){el.scrollIntoView({behavior:'smooth',block:'start'});el.style.outline='2px solid var(--sakura-500)';setTimeout(()=>el.style.outline='',1800);}}
+function jumpTL(e,id){e.preventDefault();const el=document.getElementById(id);if(el){const db=el.closest('.day-block');if(db){const b=db.querySelector('.day-body');if(b&&b.classList.contains('hide')){tog(db.querySelector('.day-hd'));}}setTimeout(()=>{el.scrollIntoView({behavior:'smooth',block:'center'});el.style.background='var(--honey-50)';setTimeout(()=>el.style.background='',1800);},150);}}
+
+// ── NAV ACTIVE ──
+const secs=['s1','s2','s3','s4','s5'];const links=document.querySelectorAll('.nav-scroll a');
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){links.forEach(a=>a.classList.remove('active'));const a=document.querySelector(`.nav-scroll a[href="#${e.target.id}"]`);if(a)a.classList.add('active');}});},{threshold:.15});
+secs.forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+
+// ── LEAFLET MAPS ──
+const TILE='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+const ATTR='&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>';
+const NMS=['①','②','③','④','⑤','⑥','⑦','⑧'];
+function mkIcon(n,color){return L.divIcon({html:`<div style="background:${color};color:#fff;width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.3)">${n}</div>`,iconSize:[26,26],iconAnchor:[13,13],popupAnchor:[0,-13],className:''});}
+function buildMap(id,center,zoom,stops,color){
+  const map=L.map(id,{scrollWheelZoom:false}).setView(center,zoom);
+  L.tileLayer(TILE,{attribution:ATTR,maxZoom:18}).addTo(map);
+  const lls=stops.map((s,i)=>{
+    const m=L.marker(s.ll,{icon:mkIcon(NMS[i],color)}).addTo(map);
+    let pop=`<strong style="font-size:.82rem">${s.name}</strong>`;
+    if(s.map)pop+=`<br><a href="${s.map}" target="_blank" style="color:#5fa881;font-size:.72rem;text-decoration:none">📍 Google Maps</a>`;
+    if(s.tl)pop+=` &nbsp;<a href="#${s.tl}" onclick="jumpTL(event,'${s.tl}')" style="color:#d65c80;font-size:.72rem;text-decoration:none">← Timeline</a>`;
+    m.bindPopup(pop);return s.ll;});
+  if(lls.length>1){L.polyline(lls,{color,weight:2.5,opacity:.55,dashArray:'6,4'}).addTo(map);map.fitBounds(L.latLngBounds(lls).pad(.15));}}
+
+buildMap('map1',[35.69,139.70],11,[
+  {ll:[35.7717,140.3926],name:'① Narita T2 — ซื้อ N\'EX',map:'https://maps.google.com/?q=Narita+Airport+T2'},
+  {ll:[35.6912,139.7003],name:'② Shinjuku Station',map:'https://maps.google.com/?q=Shinjuku+Station'},
+  {ll:[35.6916,139.7016],name:'③ Alpen Tokyo (On Cloud)',map:'https://maps.google.com/?q=Alpen+Tokyo+Shinjuku',tl:'ev-d9-alpen'},
+  {ll:[35.6940,139.7028],name:'④ Shinjuku Grandbell Hotel',map:'https://maps.google.com/?q=Shinjuku+Grandbell+Hotel',tl:'ev-d9-hotel'},
+  {ll:[35.6957,139.7028],name:'⑤ Ichiran Ramen Kabukicho',map:'https://maps.google.com/?q=Ichiran+Ramen+Kabukicho',tl:'ev-d9-ichiran'},
+  {ll:[35.6905,139.6993],name:'⑥ Omoide Yokocho',map:'https://maps.google.com/?q=Omoide+Yokocho+Shinjuku',tl:'ev-d9-omoide'}
+],'#d65c80');
+buildMap('map2',[35.38,139.62],11,[
+  {ll:[35.6912,139.7003],name:'① Shinjuku',map:'https://maps.google.com/?q=Shinjuku+Station'},
+  {ll:[35.3194,139.5501],name:'② Kamakura Station + Komachi-dori',map:'https://maps.google.com/?q=Kamakura+Station'},
+  {ll:[35.3170,139.5350],name:'③ Kotoku-in ไดบุตสึ',map:'https://maps.google.com/?q=Kotoku-in+Great+Buddha',tl:'ev-d10-buddha'},
+  {ll:[35.3189,139.5332],name:'④ Hasedera',map:'https://maps.google.com/?q=Hasedera+Temple+Kamakura',tl:'ev-d10-hase'},
+  {ll:[35.3121,139.5216],name:'⑤ Slam Dunk Crossing',map:'https://maps.google.com/?q=鎌倉高校前踏切',tl:'ev-d10-slamdunk'},
+  {ll:[35.3015,139.4985],name:'⑥ Shichirigahama Beach',map:'https://maps.google.com/?q=Shichirigahama+Beach',tl:'ev-d10-beach'},
+  {ll:[35.3194,139.5350],name:'⑦ AKATSUKI 赤月',map:'https://maps.google.com/?q=AKATSUKI+Hase+Kamakura',tl:'ev-d10-akatsuki'}
+],'#5fa881');
+buildMap('map3',[35.71,139.72],13,[
+  {ll:[35.6912,139.7003],name:'① Shinjuku',map:'https://maps.google.com/?q=Shinjuku+Station'},
+  {ll:[35.7295,139.7109],name:'② Ikebukuro Station',map:'https://maps.google.com/?q=Ikebukuro+Station'},
+  {ll:[35.7303,139.7124],name:'③ Tobu + Uniqlo',map:'https://maps.google.com/?q=Tobu+Ikebukuro',tl:'ev-d11-tobu'},
+  {ll:[35.7291,139.7095],name:'④ Sushimamire',map:'https://maps.google.com/?q=すしまみれ+池袋',tl:'ev-d11-lunch'},
+  {ll:[35.7022,139.7745],name:'⑤ Akihabara (Optional)',map:'https://maps.google.com/?q=Akihabara',tl:'ev-d11-akiba'},
+  {ll:[35.6944,139.7040],name:'⑥ Gyukaku Shinjuku',map:'https://maps.google.com/?q=牛角+新宿',tl:'ev-d11-dinner'}
+],'#c89738');
+buildMap('map4',[35.50,138.80],11,[
+  {ll:[35.6912,139.7003],name:'① Shinjuku → รับรถ Nissan',map:'https://maps.google.com/?q=Nissan+Rent+a+Car+Shinjuku',tl:'ev-d12-car'},
+  {ll:[35.5073,138.7529],name:'② Kawaguchiko + Hoto Fudo',map:'https://maps.google.com/?q=Kawaguchiko+Station',tl:'ev-d12-lunch'},
+  {ll:[35.5247,138.7737],name:'③ Oishi Park',map:'https://maps.google.com/?q=Oishi+Park',tl:'ev-d12-oishi'},
+  {ll:[35.4596,138.8200],name:'④ Oshino Hakkai UNESCO',map:'https://maps.google.com/?q=Oshino+Hakkai',tl:'ev-d12-oshino'},
+  {ll:[35.4088,138.8712],name:'⑤ Lake Yamanakako',map:'https://maps.google.com/?q=Lake+Yamanakako',tl:'ev-d12-yama'},
+  {ll:[35.5057,138.7465],name:'⑥ Fuji Kawaguchiko Resort Hotel',map:'https://maps.google.com/?q=Fuji+Kawaguchiko+Resort+Hotel'}
+],'#4a82a8');
+buildMap('map5',[35.55,138.80],11,[
+  {ll:[35.5057,138.7465],name:'① Hotel — วิวฟูจิเช้า'},
+  {ll:[35.5083,138.7545],name:'② 旅の駅 kawaguchiko base',map:'https://maps.google.com/?q=旅の駅+kawaguchiko',tl:'ev-d13-breakfast'},
+  {ll:[35.5073,138.7529],name:'③ Yoshida Udon + ของฝาก',tl:'ev-d13-lunch'},
+  {ll:[35.6912,139.7003],name:'④ คืนรถ Shinjuku'},
+  {ll:[35.6898,139.7048],name:'⑤ Menya Kaijin 麺屋海神',map:'https://maps.google.com/?q=麺屋海神+新宿',tl:'ev-d13-dinner'}
+],'#4a82a8');
+buildMap('map6',[35.66,139.79],11,[
+  {ll:[35.6912,139.7003],name:'① Shinjuku'},
+  {ll:[35.6268,139.8846],name:'② Tokyo DisneySea 🏰',map:'https://maps.google.com/?q=Tokyo+DisneySea',tl:'ev-d14-disney'},
+  {ll:[35.6953,139.7040],name:'③ Nagi Golden Gai (กลับดึก)',map:'https://maps.google.com/?q=凪+Golden+Gai+Shinjuku',tl:'ev-d14-nagi'}
+],'#8169ad');
+buildMap('map7',[35.69,139.74],13,[
+  {ll:[35.6912,139.7003],name:'① Shinjuku'},
+  {ll:[35.6714,139.7641],name:'② Ginza — GINZA SIX + 儀兵衛',map:'https://maps.google.com/?q=GINZA+SIX',tl:'ev-d15-ginza'},
+  {ll:[35.6654,139.7696],name:'③ Tsukiji (★ Optional)',map:'https://maps.google.com/?q=Tsukiji+Outer+Market'},
+  {ll:[35.7148,139.7967],name:'④ Asakusa — Senso-ji + 三定',map:'https://maps.google.com/?q=Senso-ji+Asakusa',tl:'ev-d15-sensoji'},
+  {ll:[35.6912,139.7003],name:'⑤ กลับ Shinjuku'}
+],'#d65c80');
+buildMap('map8',[35.73,139.90],10,[
+  {ll:[35.6912,139.7003],name:'① Shinjuku (Check-out + ของฝาก)',map:'https://maps.google.com/?q=Shinjuku+Grandbell+Hotel'},
+  {ll:[35.6888,139.7020],name:'② Hayashida Ramen',map:'https://maps.google.com/?q=らぁ麺はやし田+新宿',tl:'ev-d16-lunch'},
+  {ll:[35.7717,140.3926],name:'③ Narita T2 — Tax-Free + JL707 ✈️',map:'https://maps.google.com/?q=Narita+Airport+Terminal+2'}
+],'#c89738');
+</script>
+</body>
+</html>
